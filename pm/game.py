@@ -1,6 +1,6 @@
 import pygame
 from .constants import BACKGROUND, BLACK, BG_X, BG_Y
-from .ball import SmallBall
+from .ball import SmallBall, BigBall
 
 class Game():
     def __init__(self, win):
@@ -36,7 +36,7 @@ class Game():
                     if col in (6, 12, 15, 21):
                         self.board[row][col] = SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12)
                     elif col in (1, 26):
-                        pass # two big balls have to be here
+                        self.board[row][col] = BigBall((col - 1) * 8 + 12, (row - 1) * 8 + 12)
                 elif row == 4:
                     if col in (1, 6, 12, 15, 21, 26):
                         self.board[row][col] = SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12)
@@ -121,7 +121,7 @@ class Game():
                     if col in (2, 3, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21, 24, 25):
                         self.board[row][col] = SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12)
                     elif col in (1, 26):
-                        pass # two big balls have to be here
+                        self.board[row][col] = BigBall((col - 1) * 8 + 12, (row - 1) * 8 + 12)
                     elif col == 13:
                         self.board[row][col] = 0
                     elif col == 14:
@@ -153,4 +153,4 @@ class Game():
                 else:
                     temp_list.append(self.board[row][col])
 
-            #print(temp_list)
+            print(temp_list)
