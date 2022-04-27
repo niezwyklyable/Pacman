@@ -1,10 +1,13 @@
 import pygame
 from .constants import BACKGROUND, BLACK, BG_X, BG_Y
-from .ball import SmallBall, BigBall
+from .balls import SmallBall, BigBall
+from .pacman import Pacman
 
 class Game():
     def __init__(self, win):
         self.win = win
+        self.pacman = None
+        self.create_pacman()
         self.create_board()
 
     def render(self):
@@ -19,7 +22,21 @@ class Game():
         pygame.display.update()
 
     def update(self):
-        pass
+        for row in range(31):
+            for col in range(28):
+                obj = self.board[row][col]
+                if obj != -1 and obj != 0:
+                    if obj.TYPE == 'PACMAN':
+                        if obj.dir == 'LEFT':
+                            if self.board[row][col-1] == -1:
+                                obj.stop()
+                            else:
+                                self.board[row][col-1] = obj
+                                self.board[row][col] = 0
+                                obj.move() # it's not a good way...
+
+    def create_pacman(self):
+        self.pacman = Pacman(112, 188)
 
     # this method is not optimal but does not have to because it runs only once per game and the both loops are quite short
     def create_board(self): # -1 means impassable wall point, 0 means passable empty point, every different value is an object
@@ -125,7 +142,7 @@ class Game():
                     elif col == 13:
                         self.board[row][col] = 0
                     elif col == 14:
-                        pass # pacman has to be here
+                        self.board[row][col] = self.pacman
                 elif row == 24:
                     if col in (3, 6, 9, 18, 21, 24):
                         self.board[row][col] = SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12)
@@ -153,4 +170,4 @@ class Game():
                 else:
                     temp_list.append(self.board[row][col])
 
-            print(temp_list)
+            #print(temp_list)
