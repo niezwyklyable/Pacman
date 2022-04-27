@@ -1,6 +1,6 @@
 from .constants import BG_X, BG_Y, FACTOR
 
-class Sprite(): #abstract class
+class Sprite(): # an abstract class
     def __init__(self, IMG, TYPE, x, y): # x, y - centre pos
         self.IMG = IMG
         self.TYPE = TYPE
