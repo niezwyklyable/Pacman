@@ -8,5 +8,5 @@ class ImpassablePoint(Sprite):
 
     # overriding this method because objects instantiated from this class will be invisible
     def draw(self, win):
-        pass
-        #draw.rect(win, RED, (self.x, self. y, 1, 1)) # for testing purposes
+        #pass
+        draw.rect(win, RED, (self.x, self.y, 2, 2), 2) # for testing purposes

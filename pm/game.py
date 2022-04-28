@@ -1,8 +1,9 @@
 import pygame
-from .constants import BACKGROUND, BLACK, BG_X, BG_Y
+from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .impassable_point import ImpassablePoint
+from math import sqrt
 
 class Game():
     def __init__(self, win):
@@ -24,13 +25,51 @@ class Game():
         if self.pacman:
             self.pacman.draw(self.win)
         # for testing purposes
-        #for ip in self.impassable_points:
-            #ip.draw(self.win)
+        for ip in self.impassable_points:
+            ip.draw(self.win)
         pygame.display.update()
 
     def update(self):
         if self.pacman:
-            self.pacman.move()
+            print('BEFORE COLLISION DETECTION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
+            for ip in self.impassable_points:
+                if self.collision_detection(self.pacman, ip):
+                    break # if there is a collision just do not change anything
+            else:
+                self.pacman.change_dir() # assign future_dir to current_dir
+                print('NO COLLISION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
+
+            self.pacman.move() # move according to the current_dir
+            #print('after: ', self.pacman.current_dir)
+
+    def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
+        if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'IMPASSABLE_POINT':
+            if obj1.future_dir == 'LEFT' and abs(obj2.y - obj1.y) <= obj1.IMG.get_width() // 2 and obj1.x > obj2.x and \
+                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
+                obj1.x = obj2.x + obj1.IMG.get_width() // 2 + FACTOR * 3 # alignment to the edge
+                #obj1.y = obj2.y
+                print('LEFT - COLLISION DETECTED')
+                return True
+            elif obj1.future_dir == 'RIGHT' and abs(obj2.y - obj1.y) <= obj1.IMG.get_width() // 2 and obj1.x < obj2.x and \
+                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
+                obj1.x = obj2.x - obj1.IMG.get_width() // 2 - FACTOR * 3 # alignment to the edge
+                #obj1.y = obj2.y
+                print('RIGHT - COLLISION DETECTED')
+                return True
+            elif obj1.future_dir == 'UP' and abs(obj2.x - obj1.x) <= obj1.IMG.get_width() // 2 and obj1.y > obj2.y and \
+                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
+                obj1.y = obj2.y + obj1.IMG.get_height() // 2 + FACTOR * 3 # alignment to the edge
+                #obj1.x = obj2.x
+                print('UP - COLLISION DETECTED')
+                return True
+            elif obj1.future_dir == 'DOWN' and abs(obj2.x - obj1.x) <= obj1.IMG.get_width() // 2 and obj1.y < obj2.y and \
+                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
+                obj1.y = obj2.y - obj1.IMG.get_height() // 2 - FACTOR * 3 # alignment to the edge
+                #obj1.x = obj2.x
+                print('DOWN - COLLISION DETECTED')
+                return True
+        
+        return False
 
     def create_borders(self):
         # horizontal lines
@@ -85,7 +124,7 @@ class Game():
             self.impassable_points.append(ImpassablePoint(x, 203))
         for x in list(range(20, 92)) + list(range(132, 204)):
             self.impassable_points.append(ImpassablePoint(x, 220))
-        for x in list(range(20, 92)) + list(range(132, 204)):
+        for x in list(range(20, 92)) + list(range(108, 116)) + list(range(132, 204)):
             self.impassable_points.append(ImpassablePoint(x, 227))
         for x in range(3, 221):
             self.impassable_points.append(ImpassablePoint(x, 244))
