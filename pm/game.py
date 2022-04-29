@@ -2,17 +2,16 @@ import pygame
 from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
-from .impassable_point import ImpassablePoint
+from .intersection import Intersection
 from math import sqrt
 
 class Game():
     def __init__(self, win):
         self.win = win
         self.pacman = None
-        self.impassable_points = []
+        self.intersections = []
         self.small_balls = []
         self.big_balls = []
-        self.create_borders()
         self.create_sprites()
 
     def render(self):
@@ -25,168 +24,51 @@ class Game():
         if self.pacman:
             self.pacman.draw(self.win)
         # for testing purposes
-        for ip in self.impassable_points:
-            ip.draw(self.win)
+        for i in self.intersections:
+            i.draw(self.win)
         pygame.display.update()
 
     def update(self):
         if self.pacman:
-            print('BEFORE COLLISION DETECTION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
-            for ip in self.impassable_points:
-                if self.collision_detection(self.pacman, ip):
+            #print('BEFORE COLLISION DETECTION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
+            for i in self.intersections:
+                if self.collision_detection(self.pacman, i):
                     break # if there is a collision just do not change anything
             else:
                 self.pacman.change_dir() # assign future_dir to current_dir
-                print('NO COLLISION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
+                #print('NO COLLISION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
 
             self.pacman.move() # move according to the current_dir
             #print('after: ', self.pacman.current_dir)
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
-        if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'IMPASSABLE_POINT':
+        if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'INTERSECTION':
             if obj1.future_dir == 'LEFT' and abs(obj2.y - obj1.y) <= obj1.IMG.get_width() // 2 and obj1.x > obj2.x and \
                 sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
                 obj1.x = obj2.x + obj1.IMG.get_width() // 2 + FACTOR * 3 # alignment to the edge
                 #obj1.y = obj2.y
-                print('LEFT - COLLISION DETECTED')
+                #print('LEFT - COLLISION DETECTED')
                 return True
             elif obj1.future_dir == 'RIGHT' and abs(obj2.y - obj1.y) <= obj1.IMG.get_width() // 2 and obj1.x < obj2.x and \
                 sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
                 obj1.x = obj2.x - obj1.IMG.get_width() // 2 - FACTOR * 3 # alignment to the edge
                 #obj1.y = obj2.y
-                print('RIGHT - COLLISION DETECTED')
+                #print('RIGHT - COLLISION DETECTED')
                 return True
             elif obj1.future_dir == 'UP' and abs(obj2.x - obj1.x) <= obj1.IMG.get_width() // 2 and obj1.y > obj2.y and \
                 sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
                 obj1.y = obj2.y + obj1.IMG.get_height() // 2 + FACTOR * 3 # alignment to the edge
                 #obj1.x = obj2.x
-                print('UP - COLLISION DETECTED')
+                #print('UP - COLLISION DETECTED')
                 return True
             elif obj1.future_dir == 'DOWN' and abs(obj2.x - obj1.x) <= obj1.IMG.get_width() // 2 and obj1.y < obj2.y and \
                 sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
                 obj1.y = obj2.y - obj1.IMG.get_height() // 2 - FACTOR * 3 # alignment to the edge
                 #obj1.x = obj2.x
-                print('DOWN - COLLISION DETECTED')
+                #print('DOWN - COLLISION DETECTED')
                 return True
         
         return False
-
-    def create_borders(self):
-        # horizontal lines
-        for x in range(3, 221):
-            self.impassable_points.append(ImpassablePoint(x, 3))
-        for x in list(range(20, 44)) + list(range(60, 92)) + list(range(132, 164)) + \
-            list(range(180, 204)):
-            self.impassable_points.append(ImpassablePoint(x, 20))
-        for x in list(range(20, 44)) + list(range(60, 92)) + list(range(132, 164)) + \
-            list(range(180, 204)) + list(range(108, 116)):
-            self.impassable_points.append(ImpassablePoint(x, 35))
-        for x in list(range(20, 44)) + list(range(60, 68)) + list(range(84, 140)) + \
-            list(range(156, 164)) + list(range(180, 204)):
-            self.impassable_points.append(ImpassablePoint(x, 52))
-        for x in list(range(20, 44)) + list(range(84, 140)) + list(range(180, 204)):
-            self.impassable_points.append(ImpassablePoint(x, 59))
-        for x in list(range(3, 44)) + list(range(67, 92)) + list(range(132, 157)) + \
-            list(range(180, 221)):
-            self.impassable_points.append(ImpassablePoint(x, 76))
-        for x in list(range(67, 92)) + list(range(108, 116)) + list(range(132, 157)):
-            self.impassable_points.append(ImpassablePoint(x, 83))
-        for x in list(range(84, 140)):
-            self.impassable_points.append(ImpassablePoint(x, 100))
-        for x in list(range(87, 137)):
-            self.impassable_points.append(ImpassablePoint(x, 103))
-        for x in list(range(0, 44)) + list(range(60, 68)) + list(range(156, 164)) + \
-            list(range(180, 224)):
-            self.impassable_points.append(ImpassablePoint(x, 107))
-        for x in list(range(0, 44)) + list(range(60, 68)) + list(range(156, 164)) + \
-            list(range(180, 224)):
-            self.impassable_points.append(ImpassablePoint(x, 124))
-        for x in list(range(87, 137)):
-            self.impassable_points.append(ImpassablePoint(x, 128))
-        for x in list(range(84, 140)):
-            self.impassable_points.append(ImpassablePoint(x, 131))
-        for x in list(range(84, 140)):
-            self.impassable_points.append(ImpassablePoint(x, 148))
-        for x in list(range(3, 44)) + list(range(60, 68)) + list(range(84, 140)) + \
-            list(range(156, 164)) + list(range(180, 221)):
-            self.impassable_points.append(ImpassablePoint(x, 155))
-        for x in list(range(20, 44)) + list(range(60, 92)) + list(range(132, 164)) + \
-            list(range(180, 204)):
-            self.impassable_points.append(ImpassablePoint(x, 172))
-        for x in list(range(20, 44)) + list(range(60, 92)) + list(range(132, 164)) + \
-            list(range(180, 204)) + list(range(108, 116)):
-            self.impassable_points.append(ImpassablePoint(x, 179))
-        for x in list(range(3, 20)) + list(range(60, 68)) + list(range(84, 140)) + \
-            list(range(156, 164)) + list(range(204, 221)):
-            self.impassable_points.append(ImpassablePoint(x, 196))
-        for x in list(range(3, 20)) + list(range(36, 44)) + list(range(84, 140)) + \
-            list(range(180, 188)) + list(range(204, 221)):
-            self.impassable_points.append(ImpassablePoint(x, 203))
-        for x in list(range(20, 92)) + list(range(132, 204)):
-            self.impassable_points.append(ImpassablePoint(x, 220))
-        for x in list(range(20, 92)) + list(range(108, 116)) + list(range(132, 204)):
-            self.impassable_points.append(ImpassablePoint(x, 227))
-        for x in range(3, 221):
-            self.impassable_points.append(ImpassablePoint(x, 244))
-
-        # vertical lines
-        for y in list(range(3, 77)) + list(range(155, 245)):
-            self.impassable_points.append(ImpassablePoint(3, y))
-        for y in range(196, 204):
-            self.impassable_points.append(ImpassablePoint(19, y))
-        for y in list(range(20, 36)) + list(range(52, 60)) + list(range(172, 180)) + \
-            list(range(220, 228)):
-            self.impassable_points.append(ImpassablePoint(20, y))
-        for y in range(179, 204):
-            self.impassable_points.append(ImpassablePoint(36, y))
-        for y in list(range(20, 36)) + list(range(52, 60)) + list(range(76, 108)) + \
-            list(range(124, 156)) + list(range(172, 204)):
-            self.impassable_points.append(ImpassablePoint(43, y))
-        for y in list(range(20, 36)) + list(range(52, 108)) + list(range(124, 156)) + \
-            list(range(172, 180)) + list(range(196, 221)):
-            self.impassable_points.append(ImpassablePoint(60, y))
-        for y in list(range(52, 108)) + list(range(124, 156)) + list(range(196, 221)):
-            self.impassable_points.append(ImpassablePoint(67, y))
-        for y in list(range(52, 60)) + list(range(100, 132)) + list(range(148, 156)) + \
-            list(range(196, 204)):
-            self.impassable_points.append(ImpassablePoint(84, y))
-        for y in range(103, 129):
-            self.impassable_points.append(ImpassablePoint(87, y))
-        for y in list(range(20, 36)) + list(range(76, 84)) + list(range(172, 180)) + \
-            list(range(220, 228)):
-            self.impassable_points.append(ImpassablePoint(91, y))
-        for y in list(range(3, 36)) + list(range(59, 84)) + list(range(155, 180)) + \
-            list(range(204, 228)):
-            self.impassable_points.append(ImpassablePoint(108, y))
-        # mirror reflection
-        for y in list(range(3, 77)) + list(range(155, 245)):
-            self.impassable_points.append(ImpassablePoint(220, y))
-        for y in range(196, 204):
-            self.impassable_points.append(ImpassablePoint(204, y))
-        for y in list(range(20, 36)) + list(range(52, 60)) + list(range(172, 180)) + \
-            list(range(220, 228)):
-            self.impassable_points.append(ImpassablePoint(203, y))
-        for y in range(179, 204):
-            self.impassable_points.append(ImpassablePoint(187, y))
-        for y in list(range(20, 36)) + list(range(52, 60)) + list(range(76, 108)) + \
-            list(range(124, 156)) + list(range(172, 204)):
-            self.impassable_points.append(ImpassablePoint(180, y))
-        for y in list(range(20, 36)) + list(range(52, 108)) + list(range(124, 156)) + \
-            list(range(172, 180)) + list(range(196, 221)):
-            self.impassable_points.append(ImpassablePoint(163, y))
-        for y in list(range(52, 108)) + list(range(124, 156)) + list(range(196, 221)):
-            self.impassable_points.append(ImpassablePoint(156, y))
-        for y in list(range(52, 60)) + list(range(100, 132)) + list(range(148, 156)) + \
-            list(range(196, 204)):
-            self.impassable_points.append(ImpassablePoint(139, y))
-        for y in range(103, 129):
-            self.impassable_points.append(ImpassablePoint(136, y))
-        for y in list(range(20, 36)) + list(range(76, 84)) + list(range(172, 180)) + \
-            list(range(220, 228)):
-            self.impassable_points.append(ImpassablePoint(132, y))
-        for y in list(range(3, 36)) + list(range(59, 84)) + list(range(155, 180)) + \
-            list(range(204, 228)):
-            self.impassable_points.append(ImpassablePoint(115, y))
 
     # this method is not optimal but does not have to because it runs only once per game and the both loops are quite short
     def create_sprites(self):
@@ -195,10 +77,22 @@ class Game():
 
         # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
         for row in range(1, 30): # from 1 to 29
-            for col in range(1, 27): # from 1 to 26
+            for col in range(28): # from 0 to 27
                 if row == 1:
-                    if col != 13 and col != 14:
+                    if col not in (0, 13, 14, 27):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
                 elif row == 2:
                     if col in (1, 6, 12, 15, 21, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -211,7 +105,24 @@ class Game():
                     if col in (1, 6, 12, 15, 21, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                 elif row == 5:
-                    self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col not in (0, 27):
+                        self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
                 elif row == 6:
                     if col in (1, 6, 9, 18, 21, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -219,8 +130,24 @@ class Game():
                     if col in (1, 6, 9, 18, 21, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                 elif row == 8:
-                    if col not in (7, 8, 13, 14, 19, 20):
+                    if col not in (0, 7, 8, 13, 14, 19, 20, 27):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                    elif col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
                 elif row == 9:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -230,6 +157,14 @@ class Game():
                 elif row == 11:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT'))
                 elif row == 12:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -239,6 +174,18 @@ class Game():
                 elif row == 14:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 0: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT')) # the passage in the future
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 27:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT')) # the passage in the future
                 elif row == 15:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -248,6 +195,10 @@ class Game():
                 elif row == 17:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
                 elif row == 18:
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -255,8 +206,24 @@ class Game():
                     if col in (6, 21):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                 elif row == 20:
-                    if col != 13 and col != 14:
+                    if col not in (0, 13, 14, 27):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                    elif col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'LEFT', 'DOWN'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT'))
                 elif row == 21:
                     if col in (1, 6, 12, 15, 21, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -268,6 +235,26 @@ class Game():
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                     elif col in (1, 26):
                         self.big_balls.append(BigBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                    elif col == 3:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                    elif col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT', 'RIGHT'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT', 'RIGHT'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                    elif col == 24:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
                 elif row == 24:
                     if col in (3, 6, 9, 18, 21, 24):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -275,8 +262,28 @@ class Game():
                     if col in (3, 6, 9, 18, 21, 24):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                 elif row == 26:
-                    if col not in (7, 8, 13, 14, 19, 20):
+                    if col not in (0, 7, 8, 13, 14, 19, 20, 27):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                    elif col == 3:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 6:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                    elif col == 9:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                    elif col == 18:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                    elif col == 21:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                    elif col == 24:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT'))
                 elif row == 27:
                     if col in (1, 12, 15, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -284,4 +291,16 @@ class Game():
                     if col in (1, 12, 15, 26):
                         self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                 elif row == 29:
-                    self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col not in (0, 27):
+                        self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
+                    if col == 1: 
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                    elif col == 12:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 15:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                    elif col == 26:
+                        self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+
+        # for i in self.intersections:
+        #     print(i.dirs)
