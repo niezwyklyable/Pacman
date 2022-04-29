@@ -1,6 +1,7 @@
 from .sprite import Sprite
 from .constants import PACMAN_LEFT_1, PACMAN_LEFT_2, PACMAN_RIGHT_1, PACMAN_RIGHT_2,\
-     PACMAN_UP_1, PACMAN_UP_2, PACMAN_DOWN_1, PACMAN_DOWN_2, PACMAN_FULL, FACTOR
+     PACMAN_UP_1, PACMAN_UP_2, PACMAN_DOWN_1, PACMAN_DOWN_2, PACMAN_FULL, FACTOR, WHITE
+from pygame import draw
 
 class Pacman(Sprite):
     STEP = 1 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
@@ -38,6 +39,25 @@ class Pacman(Sprite):
             self.y += self.STEP * FACTOR
         else:
             pass # do nothing if current_dir is None
+
+    def draw(self, win):
+        super().draw(win)
+        if self.future_dir == 'LEFT':
+            draw.polygon(win, WHITE, [(self.x - self.IMG.get_width() // 2 - FACTOR * 5, self.y), \
+                (self.x - self.IMG.get_width() // 2 - FACTOR * 3, self.y - FACTOR * 2),\
+                    (self.x - self.IMG.get_width() // 2 - FACTOR * 3, self.y + FACTOR * 2)])
+        elif self.future_dir == 'RIGHT':
+            draw.polygon(win, WHITE, [(self.x + self.IMG.get_width() // 2 + FACTOR * 5, self.y), \
+                (self.x + self.IMG.get_width() // 2 + FACTOR * 3, self.y - FACTOR * 2),\
+                    (self.x + self.IMG.get_width() // 2 + FACTOR * 3, self.y + FACTOR * 2)])
+        elif self.future_dir == 'UP':
+            draw.polygon(win, WHITE, [(self.x, self.y - self.IMG.get_height() // 2 - FACTOR * 5), \
+                (self.x - FACTOR * 2, self.y - self.IMG.get_height() // 2 - FACTOR * 3),\
+                    (self.x + FACTOR * 2, self.y - self.IMG.get_height() // 2 - FACTOR * 3)])
+        elif self.future_dir == 'DOWN':
+            draw.polygon(win, WHITE, [(self.x, self.y + self.IMG.get_height() // 2 + FACTOR * 5), \
+                (self.x - FACTOR * 2, self.y + self.IMG.get_height() // 2 + FACTOR * 3),\
+                    (self.x + FACTOR * 2, self.y + self.IMG.get_height() // 2 + FACTOR * 3)])
 
     def change_image(self):
         if self.current_dir == 'LEFT':

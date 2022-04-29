@@ -11,7 +11,7 @@ FACTOR = 3
 # colors
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-#WHITE = (255, 255, 255)
+WHITE = (255, 255, 255)
 
 # assets
 SPRITE_SHEET = load('assets/pacman1.png')
