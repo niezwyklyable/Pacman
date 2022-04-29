@@ -30,44 +30,36 @@ class Game():
 
     def update(self):
         if self.pacman:
-            #print('BEFORE COLLISION DETECTION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
             for i in self.intersections:
                 if self.collision_detection(self.pacman, i):
-                    break # if there is a collision just do not change anything
-            else:
-                self.pacman.change_dir() # assign future_dir to current_dir
-                #print('NO COLLISION - CURRENT_DIR: ', self.pacman.current_dir, ' - FUTURE_DIR: ', self.pacman.future_dir)
+                    break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
+            else: 
+                # available moves between two intersections (when there is no collision)
+                if self.pacman.current_dir == 'LEFT' and self.pacman.future_dir == 'RIGHT':
+                    self.pacman.change_dir()
+                elif self.pacman.current_dir == 'RIGHT' and self.pacman.future_dir == 'LEFT':
+                    self.pacman.change_dir()
+                elif self.pacman.current_dir == 'UP' and self.pacman.future_dir == 'DOWN':
+                    self.pacman.change_dir()
+                elif self.pacman.current_dir == 'DOWN' and self.pacman.future_dir == 'UP':
+                    self.pacman.change_dir()
 
             self.pacman.move() # move according to the current_dir
-            #print('after: ', self.pacman.current_dir)
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'INTERSECTION':
-            if obj1.future_dir == 'LEFT' and abs(obj2.y - obj1.y) <= obj1.IMG.get_width() // 2 and obj1.x > obj2.x and \
-                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
-                obj1.x = obj2.x + obj1.IMG.get_width() // 2 + FACTOR * 3 # alignment to the edge
-                #obj1.y = obj2.y
-                #print('LEFT - COLLISION DETECTED')
+            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * 1: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
+                obj1.x = obj2.x # alignment to the center of obj2
+                obj1.y = obj2.y # alignment to the center of obj2
+                if obj1.future_dir in obj2.dirs:
+                    # if there is a possibility to change dir then do it firstly
+                    obj1.change_dir() # assign future_dir to current_dir
+                elif obj1.current_dir in obj2.dirs:
+                    pass # if there is a possibility to keep going then do not change anything
+                else:
+                    obj1.stop() # assign None value to current_dir if there is no possibility to move forward or wherever you wish
                 return True
-            elif obj1.future_dir == 'RIGHT' and abs(obj2.y - obj1.y) <= obj1.IMG.get_width() // 2 and obj1.x < obj2.x and \
-                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
-                obj1.x = obj2.x - obj1.IMG.get_width() // 2 - FACTOR * 3 # alignment to the edge
-                #obj1.y = obj2.y
-                #print('RIGHT - COLLISION DETECTED')
-                return True
-            elif obj1.future_dir == 'UP' and abs(obj2.x - obj1.x) <= obj1.IMG.get_width() // 2 and obj1.y > obj2.y and \
-                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
-                obj1.y = obj2.y + obj1.IMG.get_height() // 2 + FACTOR * 3 # alignment to the edge
-                #obj1.x = obj2.x
-                #print('UP - COLLISION DETECTED')
-                return True
-            elif obj1.future_dir == 'DOWN' and abs(obj2.x - obj1.x) <= obj1.IMG.get_width() // 2 and obj1.y < obj2.y and \
-                sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) <= obj1.IMG.get_width() // 2 + FACTOR * 3:
-                obj1.y = obj2.y - obj1.IMG.get_height() // 2 - FACTOR * 3 # alignment to the edge
-                #obj1.x = obj2.x
-                #print('DOWN - COLLISION DETECTED')
-                return True
-        
+                
         return False
 
     # this method is not optimal but does not have to because it runs only once per game and the both loops are quite short
@@ -302,5 +294,5 @@ class Game():
                     elif col == 26:
                         self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
 
-        # for i in self.intersections:
-        #     print(i.dirs)
+        #for i in self.intersections:
+            #print(i.dirs)
