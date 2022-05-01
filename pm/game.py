@@ -45,10 +45,11 @@ class Game():
                     self.pacman.change_dir()
 
             self.pacman.move() # move according to the current_dir
+            self.pacman.change_image() # an animation
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'INTERSECTION':
-            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * 1: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
+            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
                 obj1.x = obj2.x # alignment to the center of obj2
                 obj1.y = obj2.y # alignment to the center of obj2
                 if obj1.future_dir in obj2.dirs:

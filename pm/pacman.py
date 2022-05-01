@@ -4,13 +4,13 @@ from .constants import PACMAN_LEFT_1, PACMAN_LEFT_2, PACMAN_RIGHT_1, PACMAN_RIGH
 from pygame import draw
 
 class Pacman(Sprite):
-    STEP = 1 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
+    STEP = 2 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
 
     def __init__(self, x, y):
         super().__init__(IMG=PACMAN_FULL, TYPE='PACMAN', x=x, y=y)
         self.current_dir = 'LEFT'
         self.future_dir = 'LEFT'
-        #self.img_state = 0
+        self.img_state = 0 # PACMAN_FULL image always independently from a dir
 
     def set_future_dir(self, dir):
         if dir == 'LEFT':
@@ -61,4 +61,23 @@ class Pacman(Sprite):
 
     def change_image(self):
         if self.current_dir == 'LEFT':
-            pass
+            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_LEFT_2, PACMAN_LEFT_1, PACMAN_LEFT_2)))
+        elif self.current_dir == 'RIGHT':
+            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_RIGHT_2, PACMAN_RIGHT_1, PACMAN_RIGHT_2)))
+        elif self.current_dir == 'UP':
+            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_UP_2, PACMAN_UP_1, PACMAN_UP_2)))
+        elif self.current_dir == 'DOWN':
+            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_DOWN_2, PACMAN_DOWN_1, PACMAN_DOWN_2)))
+        else:
+            return # if Pacman's current_dir is None    
+
+        if self.img_state == 3:
+            self.IMG = PACMAN_FULL
+            self.img_state = 0
+            return
+
+        for state, image in STATES:
+            if state == self.img_state:
+                self.IMG = STATES[STATES.index((state, image)) + 1][1]
+                self.img_state = state + 1
+                break
