@@ -1,5 +1,5 @@
 import pygame
-from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR
+from .constants import BACKGROUND, BIG_BALL, BLACK, BG_X, BG_Y, FACTOR
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .intersection import Intersection
@@ -19,13 +19,18 @@ class Game():
         self.win.blit(BACKGROUND, (BG_X, BG_Y))
         for obj in self.small_balls:
             obj.draw(self.win)
+
         for obj in self.big_balls:
-            obj.draw(self.win)
+            if obj.IMG:
+                obj.draw(self.win)
+
         if self.pacman:
             self.pacman.draw(self.win)
+
         # for testing purposes
         for i in self.intersections:
             i.draw(self.win)
+
         pygame.display.update()
 
     def update(self):
@@ -46,6 +51,9 @@ class Game():
 
             self.pacman.move() # move according to the current_dir
             self.pacman.change_image() # an animation
+
+        for bb in self.big_balls:
+            bb.change_image() # an animation of a static object
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'INTERSECTION':
@@ -294,6 +302,3 @@ class Game():
                         self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
                     elif col == 26:
                         self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
-
-        #for i in self.intersections:
-            #print(i.dirs)

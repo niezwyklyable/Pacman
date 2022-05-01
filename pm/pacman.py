@@ -5,6 +5,7 @@ from pygame import draw
 
 class Pacman(Sprite):
     STEP = 2 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
+    REPLICATE = 2 # the extension of the lifetime of the current IMG
 
     def __init__(self, x, y):
         super().__init__(IMG=PACMAN_FULL, TYPE='PACMAN', x=x, y=y)
@@ -61,17 +62,21 @@ class Pacman(Sprite):
 
     def change_image(self):
         if self.current_dir == 'LEFT':
-            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_LEFT_2, PACMAN_LEFT_1, PACMAN_LEFT_2)))
+            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_LEFT_2, ) * self.REPLICATE + \
+                (PACMAN_LEFT_1, ) * self.REPLICATE + (PACMAN_LEFT_2, ) * self.REPLICATE))
         elif self.current_dir == 'RIGHT':
-            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_RIGHT_2, PACMAN_RIGHT_1, PACMAN_RIGHT_2)))
+            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_RIGHT_2, ) * self.REPLICATE + \
+                (PACMAN_RIGHT_1, ) * self.REPLICATE + (PACMAN_RIGHT_2, ) * self.REPLICATE))
         elif self.current_dir == 'UP':
-            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_UP_2, PACMAN_UP_1, PACMAN_UP_2)))
+            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_UP_2, ) * self.REPLICATE + \
+                (PACMAN_UP_1, ) * self.REPLICATE + (PACMAN_UP_2, ) * self.REPLICATE))
         elif self.current_dir == 'DOWN':
-            STATES = tuple(enumerate((PACMAN_FULL, PACMAN_DOWN_2, PACMAN_DOWN_1, PACMAN_DOWN_2)))
+            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_DOWN_2, ) * self.REPLICATE + \
+                (PACMAN_DOWN_1, ) * self.REPLICATE + (PACMAN_DOWN_2, ) * self.REPLICATE))
         else:
-            return # if Pacman's current_dir is None    
+            return # if Pacman's current_dir is None
 
-        if self.img_state == 3:
+        if self.img_state == len(STATES) - 1:
             self.IMG = PACMAN_FULL
             self.img_state = 0
             return
