@@ -13,6 +13,7 @@ class BigBall(SmallBall):
         self.IMG = BIG_BALL
         self.TYPE = 'BIG_BALL'
         self.img_state = 0
+        self.IMG_WIDTH = BIG_BALL.get_width()
 
     def change_image(self):
         STATES = tuple(enumerate((BIG_BALL, ) * self.REPLICATE + (None, ) * self.REPLICATE))

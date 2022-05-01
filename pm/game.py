@@ -1,5 +1,5 @@
 import pygame
-from .constants import BACKGROUND, BIG_BALL, BLACK, BG_X, BG_Y, FACTOR
+from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .intersection import Intersection
@@ -52,6 +52,16 @@ class Game():
             self.pacman.move() # move according to the current_dir
             self.pacman.change_image() # an animation
 
+            for sb in self.small_balls:
+                if self.collision_detection(self.pacman, sb):
+                    self.small_balls.remove(sb)
+                    print('Added 10 points')
+
+            for bb in self.big_balls:
+                if self.collision_detection(self.pacman, bb):
+                    self.big_balls.remove(bb)
+                    print('Added 50 points')
+
         for bb in self.big_balls:
             bb.change_image() # an animation of a static object
 
@@ -69,6 +79,14 @@ class Game():
                     obj1.stop() # assign None value to current_dir if there is no possibility to move forward or wherever you wish
                 return True
                 
+        elif obj1.TYPE == 'PACMAN' and obj2.TYPE == 'SMALL_BALL':
+            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < obj1.IMG.get_width() // 2 + obj2.IMG.get_width() // 2:
+                return True
+
+        elif obj1.TYPE == 'PACMAN' and obj2.TYPE == 'BIG_BALL':
+            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < obj1.IMG.get_width() // 2 + obj2.IMG_WIDTH // 2:
+                return True
+
         return False
 
     # this method is not optimal but does not have to because it runs only once per game and the both loops are quite short

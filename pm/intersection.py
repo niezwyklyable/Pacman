@@ -11,5 +11,5 @@ class Intersection(Sprite):
 
     # overriding this method because objects instantiated from this class will be invisible
     def draw(self, win):
-        #pass
-        draw.rect(win, RED, (self.x - 3, self.y - 3, 6, 6), 5) # for testing purposes
+        pass
+        #draw.rect(win, RED, (self.x - 3, self.y - 3, 6, 6), 5) # for testing purposes
