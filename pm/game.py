@@ -36,7 +36,9 @@ class Game():
 
         # caption
         font = pygame.font.SysFont('comicsans', 20)
-        caption = font.render(f'LVL: {self.level}        SCORE: {self.score}', 1, WHITE)
+        caption = font.render(f'LVL: {self.level}\
+                    SCORE: {self.score}\
+                    HIGH SCORE: {self.high_score}', 1, WHITE)
         self.win.blit(caption, (int(BG_X + 10), int(BG_Y - caption.get_height() / 2 - 13)))
 
         pygame.display.update()
