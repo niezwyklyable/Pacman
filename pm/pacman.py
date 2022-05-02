@@ -13,6 +13,10 @@ class Pacman(Sprite):
         self.current_dir = 'LEFT'
         self.future_dir = 'LEFT'
         self.img_state = 0 # PACMAN_FULL image always independently from a dir
+        self.STATES_LEFT = [PACMAN_FULL, PACMAN_LEFT_2, PACMAN_LEFT_1, PACMAN_LEFT_2]
+        self.STATES_RIGHT = [PACMAN_FULL, PACMAN_RIGHT_2, PACMAN_RIGHT_1, PACMAN_RIGHT_2]
+        self.STATES_UP = [PACMAN_FULL, PACMAN_UP_2, PACMAN_UP_1, PACMAN_UP_2]
+        self.STATES_DOWN = [PACMAN_FULL, PACMAN_DOWN_2, PACMAN_DOWN_1, PACMAN_DOWN_2]
 
     def set_future_dir(self, dir):
         if dir == 'LEFT':
@@ -62,28 +66,30 @@ class Pacman(Sprite):
                     (self.x + FACTOR * 2, self.y + self.IMG.get_height() // 2 + FACTOR * 3)])
 
     def change_image(self):
+        t = tuple()
         if self.current_dir == 'LEFT':
-            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_LEFT_2, ) * self.REPLICATE + \
-                (PACMAN_LEFT_1, ) * self.REPLICATE + (PACMAN_LEFT_2, ) * self.REPLICATE))
+            for s in self.STATES_LEFT:
+                t += (s, ) * self.REPLICATE
         elif self.current_dir == 'RIGHT':
-            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_RIGHT_2, ) * self.REPLICATE + \
-                (PACMAN_RIGHT_1, ) * self.REPLICATE + (PACMAN_RIGHT_2, ) * self.REPLICATE))
+            for s in self.STATES_RIGHT:
+                t += (s, ) * self.REPLICATE
         elif self.current_dir == 'UP':
-            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_UP_2, ) * self.REPLICATE + \
-                (PACMAN_UP_1, ) * self.REPLICATE + (PACMAN_UP_2, ) * self.REPLICATE))
+            for s in self.STATES_UP:
+                t += (s, ) * self.REPLICATE
         elif self.current_dir == 'DOWN':
-            STATES = tuple(enumerate((PACMAN_FULL, ) * self.REPLICATE + (PACMAN_DOWN_2, ) * self.REPLICATE + \
-                (PACMAN_DOWN_1, ) * self.REPLICATE + (PACMAN_DOWN_2, ) * self.REPLICATE))
+            for s in self.STATES_DOWN:
+                t += (s, ) * self.REPLICATE
         else:
             return # if Pacman's current_dir is None
 
-        if self.img_state == len(STATES) - 1:
-            self.IMG = PACMAN_FULL
+        states = tuple(enumerate(t))
+        if self.img_state == len(states) - 1:
+            self.IMG = self.STATES_LEFT[0] # PACMAN_FULL
             self.img_state = 0
             return
 
-        for state, image in STATES:
+        for state, image in states:
             if state == self.img_state:
-                self.IMG = STATES[STATES.index((state, image)) + 1][1]
+                self.IMG = states[states.index((state, image)) + 1][1]
                 self.img_state = state + 1
                 break

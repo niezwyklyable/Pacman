@@ -1,8 +1,9 @@
 import pygame
-from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR, WHITE, RED
+from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR, WHITE
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .intersection import Intersection
+from .ghosts import Blinky
 from math import sqrt
 
 class Game():
@@ -12,6 +13,7 @@ class Game():
         self.intersections = []
         self.small_balls = []
         self.big_balls = []
+        self.ghosts = []
         self.level = 1
         self.create_sprites(self.level)
         self.score = 0
@@ -29,6 +31,9 @@ class Game():
 
         if self.pacman:
             self.pacman.draw(self.win)
+
+        for obj in self.ghosts:
+            obj.draw(self.win)
 
         # for testing purposes
         for i in self.intersections:
@@ -53,6 +58,7 @@ class Game():
             self.level += 1
             self.pacman = None
             self.intersections = []
+            self.ghosts = []
             self.create_sprites(self.level)
 
         if self.pacman:
@@ -86,8 +92,16 @@ class Game():
         for bb in self.big_balls:
             bb.change_image() # an animation of a static object
 
+        for g in self.ghosts:
+            for i in self.intersections:
+                if self.collision_detection(g, i):
+                    break
+
+            g.move() # move according to the current_dir
+            g.change_image() # an animation
+
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
-        if obj1.TYPE == 'PACMAN' and obj2.TYPE == 'INTERSECTION':
+        if (obj1.TYPE == 'PACMAN' or obj1.TYPE == 'GHOST') and obj2.TYPE == 'INTERSECTION':
             if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
                 obj1.x = obj2.x # alignment to the center of obj2
                 obj1.y = obj2.y # alignment to the center of obj2
@@ -120,7 +134,9 @@ class Game():
         else:
             step = 3
 
+        ghost_step = 2/3 * step
         self.pacman = Pacman(112, 188, step)
+        self.ghosts.append(Blinky(112, 92, ghost_step))
 
         # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
         for row in range(1, 30): # from 1 to 29
