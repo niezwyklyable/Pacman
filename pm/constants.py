@@ -5,7 +5,7 @@ from pygame.transform import scale
 FPS = 30
 
 # screen dims and scale
-WIDTH, HEIGHT = 700, 770
+WIDTH, HEIGHT = 700, 790
 FACTOR = 3
 
 # colors

@@ -1,5 +1,5 @@
 import pygame
-from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR
+from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR, WHITE, RED
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .intersection import Intersection
@@ -12,7 +12,10 @@ class Game():
         self.intersections = []
         self.small_balls = []
         self.big_balls = []
-        self.create_sprites()
+        self.level = 1
+        self.create_sprites(self.level)
+        self.score = 0
+        self.high_score = 0
 
     def render(self):
         self.win.fill(BLACK)
@@ -31,9 +34,25 @@ class Game():
         for i in self.intersections:
             i.draw(self.win)
 
+        # caption
+        font = pygame.font.SysFont('comicsans', 20)
+        caption = font.render(f'LVL: {self.level}        SCORE: {self.score}', 1, WHITE)
+        self.win.blit(caption, (int(BG_X + 10), int(BG_Y - caption.get_height() / 2 - 13)))
+
         pygame.display.update()
 
     def update(self):
+        # high score update
+        if self.score > self.high_score:
+            self.high_score = self.score
+
+        # next level condition
+        if not self.small_balls and not self.big_balls:
+            self.level += 1
+            self.pacman = None
+            self.intersections = []
+            self.create_sprites(self.level)
+
         if self.pacman:
             for i in self.intersections:
                 if self.collision_detection(self.pacman, i):
@@ -55,12 +74,12 @@ class Game():
             for sb in self.small_balls:
                 if self.collision_detection(self.pacman, sb):
                     self.small_balls.remove(sb)
-                    print('Added 10 points')
+                    self.score += 10
 
             for bb in self.big_balls:
                 if self.collision_detection(self.pacman, bb):
                     self.big_balls.remove(bb)
-                    print('Added 50 points')
+                    self.score += 50
 
         for bb in self.big_balls:
             bb.change_image() # an animation of a static object
@@ -90,9 +109,16 @@ class Game():
         return False
 
     # this method is not optimal but does not have to because it runs only once per game and the both loops are quite short
-    def create_sprites(self):
+    def create_sprites(self, lvl):
         # dynamic objects
-        self.pacman = Pacman(112, 188)
+        if lvl == 1:
+            step = 1
+        elif lvl == 2:
+            step = 2
+        else:
+            step = 3
+
+        self.pacman = Pacman(112, 188, step)
 
         # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
         for row in range(1, 30): # from 1 to 29

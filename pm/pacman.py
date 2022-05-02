@@ -4,11 +4,12 @@ from .constants import PACMAN_LEFT_1, PACMAN_LEFT_2, PACMAN_RIGHT_1, PACMAN_RIGH
 from pygame import draw
 
 class Pacman(Sprite):
-    STEP = 2 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
+    #STEP = 2 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
     REPLICATE = 2 # the extension of the lifetime of the current IMG
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, STEP):
         super().__init__(IMG=PACMAN_FULL, TYPE='PACMAN', x=x, y=y)
+        self.STEP = STEP
         self.current_dir = 'LEFT'
         self.future_dir = 'LEFT'
         self.img_state = 0 # PACMAN_FULL image always independently from a dir
