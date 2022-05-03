@@ -12,46 +12,53 @@ class Game():
         self.high_score = 0
         self.restart()
 
-    def restart(self):
+    def restart(self, next_level=False):
         self.pacman = None
         self.intersections = []
         self.small_balls = []
         self.big_balls = []
         self.ghosts = []
-        self.level = 1
+        if not next_level:
+            self.gameover = False
+            self.level = 1
+            self.score = 0
+            self.lives = 3
         self.create_sprites(self.level)
-        self.score = 0
-        self.lives = 3
-        self.gameover = False
 
     def render(self):
+        # the background
         self.win.fill(BLACK)
         self.win.blit(BACKGROUND, (BG_X, BG_Y))
+        
+        # small balls
         for obj in self.small_balls:
             obj.draw(self.win)
 
+        # big balls
         for obj in self.big_balls:
             if obj.IMG:
                 obj.draw(self.win)
 
+        # the Pacman
         if self.pacman:
             self.pacman.draw(self.win)
 
+        # ghosts
         for obj in self.ghosts:
             obj.draw(self.win)
 
-        # for testing purposes
+        # points of intersections (for testing purposes)
         for i in self.intersections:
             i.draw(self.win)
 
-        # upper bar
+        # an upper bar
         font = pygame.font.SysFont('comicsans', 20)
         caption = font.render(f'LVL: {self.level}\
                     SCORE: {self.score}\
                     HIGH SCORE: {self.high_score}', 1, WHITE)
         self.win.blit(caption, (int(BG_X + 10), int(BG_Y - caption.get_height() / 2 - 13)))
 
-        # bottom bar
+        # a bottom bar
         font = pygame.font.SysFont('comicsans', 15)
         caption = font.render('LIVES: ', 1, WHITE)
         self.win.blit(caption, (int(BG_X + 10), int(BG_Y + BACKGROUND.get_height() + caption.get_height() / 2 - 11)))
@@ -63,7 +70,7 @@ class Game():
             x += DX
             temp -= 1
 
-        # game over caption
+        # a game over caption
         if self.gameover:
             font = pygame.font.SysFont('comicsans', 35)
             caption = font.render('GAME OVER', 1, RED)
@@ -79,53 +86,65 @@ class Game():
         # next level condition
         if not self.small_balls and not self.big_balls:
             self.level += 1
-            self.pacman = None
-            self.intersections = []
-            self.ghosts = []
-            self.create_sprites(self.level)
+            self.restart(next_level=True)
 
         if self.pacman:
-            for i in self.intersections:
-                if self.collision_detection(self.pacman, i):
-                    break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
-            else: 
-                # available moves between two intersections (when there is no collision)
-                if self.pacman.current_dir == 'LEFT' and self.pacman.future_dir == 'RIGHT':
-                    self.pacman.change_dir()
-                elif self.pacman.current_dir == 'RIGHT' and self.pacman.future_dir == 'LEFT':
-                    self.pacman.change_dir()
-                elif self.pacman.current_dir == 'UP' and self.pacman.future_dir == 'DOWN':
-                    self.pacman.change_dir()
-                elif self.pacman.current_dir == 'DOWN' and self.pacman.future_dir == 'UP':
-                    self.pacman.change_dir()
-
-            self.pacman.move() # move according to the current_dir
-            self.pacman.change_image() # an animation
-
-            for sb in self.small_balls:
-                if self.collision_detection(self.pacman, sb):
-                    self.small_balls.remove(sb)
-                    self.score += 10
-
-            for bb in self.big_balls:
-                if self.collision_detection(self.pacman, bb):
-                    self.big_balls.remove(bb)
-                    self.score += 50
-
-            for g in self.ghosts:
-                if self.collision_detection(self.pacman, g):
-                    self.lives -= 1
+            # the decaying animation of the pacman
+            if self.pacman.decaying:
+                if self.pacman.decay():
+                    pass # do nothing - let static objects animate until it finishes
+                else:
                     self.pacman = None
-                    self.ghosts = []
+                    # game over condition
                     if self.lives <= 0:
                         self.gameover = True
                     else:
-                        self.create_sprites(self.level, reset_static_objects=False)
-                    break
+                        self.create_sprites(self.level, reset_static_objects=False) # reset only dynamic objects (the Pacman and ghosts)
+            else:
+                # collision between the pacman and intersections
+                for i in self.intersections:
+                    if self.collision_detection(self.pacman, i):
+                        break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
+                else: 
+                    # available moves between two intersections (when there is no collision)
+                    if self.pacman.current_dir == 'LEFT' and self.pacman.future_dir == 'RIGHT':
+                        self.pacman.change_dir()
+                    elif self.pacman.current_dir == 'RIGHT' and self.pacman.future_dir == 'LEFT':
+                        self.pacman.change_dir()
+                    elif self.pacman.current_dir == 'UP' and self.pacman.future_dir == 'DOWN':
+                        self.pacman.change_dir()
+                    elif self.pacman.current_dir == 'DOWN' and self.pacman.future_dir == 'UP':
+                        self.pacman.change_dir()
 
+                self.pacman.move() # move according to the current_dir
+                self.pacman.change_image() # an animation
+
+                # collision between the pacman and small balls
+                for sb in self.small_balls:
+                    if self.collision_detection(self.pacman, sb):
+                        self.small_balls.remove(sb)
+                        self.score += 10
+
+                # collision between the pacman and big balls
+                for bb in self.big_balls:
+                    if self.collision_detection(self.pacman, bb):
+                        self.big_balls.remove(bb)
+                        self.score += 50
+
+                # collision between the pacman and ghosts
+                for g in self.ghosts:
+                    if self.collision_detection(self.pacman, g):
+                        self.lives -= 1
+                        self.ghosts = []
+                        self.pacman.decaying = True
+                        self.pacman.stop()
+                        break
+
+        # an animation of a static object - a big ball
         for bb in self.big_balls:
-            bb.change_image() # an animation of a static object
+            bb.change_image()
 
+        # collision between ghosts and intersections
         for g in self.ghosts:
             for i in self.intersections:
                 if self.collision_detection(g, i):
@@ -164,7 +183,6 @@ class Game():
 
         return False
 
-    # this method is not optimal but does not have to because it runs only once per game and the both loops are quite short
     def create_sprites(self, lvl, reset_static_objects=True):
         # dynamic objects
         if lvl == 1:
@@ -178,6 +196,7 @@ class Game():
         self.pacman = Pacman(112, 188, step)
         self.ghosts.append(Blinky(112, 92, ghost_step))
 
+        # static objects
         if reset_static_objects:
             # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
             for row in range(1, 30): # from 1 to 29
