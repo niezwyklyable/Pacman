@@ -84,7 +84,7 @@ class Pacman(Sprite):
 
         states = tuple(enumerate(t))
         if self.img_state == len(states) - 1:
-            self.IMG = self.STATES_LEFT[0] # PACMAN_FULL
+            self.IMG = states[0][1] # PACMAN_FULL
             self.img_state = 0
             return
 

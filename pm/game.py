@@ -105,6 +105,8 @@ class Game():
             if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
                 obj1.x = obj2.x # alignment to the center of obj2
                 obj1.y = obj2.y # alignment to the center of obj2
+                if obj1.TYPE == 'GHOST':
+                    obj1.generate_random_dir()
                 if obj1.future_dir in obj2.dirs:
                     # if there is a possibility to change dir then do it firstly
                     obj1.change_dir() # assign future_dir to current_dir
