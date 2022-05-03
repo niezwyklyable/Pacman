@@ -23,15 +23,18 @@ def main():
                 print(pos)
 
             if event.type == pygame.KEYDOWN:
-                #if not game.gameover:
-                if event.key == pygame.K_LEFT:
-                    game.pacman.set_future_dir('LEFT')
-                elif event.key == pygame.K_RIGHT:
-                    game.pacman.set_future_dir('RIGHT')
-                elif event.key == pygame.K_UP:
-                    game.pacman.set_future_dir('UP')
-                elif event.key == pygame.K_DOWN:
-                    game.pacman.set_future_dir('DOWN')
+                if not game.gameover:
+                    if event.key == pygame.K_LEFT:
+                        game.pacman.set_future_dir('LEFT')
+                    elif event.key == pygame.K_RIGHT:
+                        game.pacman.set_future_dir('RIGHT')
+                    elif event.key == pygame.K_UP:
+                        game.pacman.set_future_dir('UP')
+                    elif event.key == pygame.K_DOWN:
+                        game.pacman.set_future_dir('DOWN')
+                else:
+                    if event.key == pygame.K_RETURN:
+                        game.restart()
 
         game.update()
         game.render()
