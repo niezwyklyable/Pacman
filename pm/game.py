@@ -7,6 +7,8 @@ from .ghosts import Blinky, Inky, Pinky, Clyde
 from math import sqrt
 
 class Game():
+    GO_OUT_THRESHOLD = 250  # basic number of frames to go out (for ghosts)
+    
     def __init__(self, win):
         self.win = win
         self.high_score = 0
@@ -18,6 +20,7 @@ class Game():
         self.small_balls = []
         self.big_balls = []
         self.ghosts = []
+        self.frames = 0
         if not next_level:
             self.gameover = False
             self.level = 1
@@ -79,6 +82,9 @@ class Game():
         pygame.display.update()
 
     def update(self):
+        # frame number update
+        self.frames += 1
+
         # high score update
         if self.score > self.high_score:
             self.high_score = self.score
@@ -100,6 +106,7 @@ class Game():
                     if self.lives <= 0:
                         self.gameover = True
                     else:
+                        self.frames = 0
                         self.create_sprites(self.level, reset_static_objects=False) # reset only dynamic objects (the Pacman and ghosts)
             else:
                 # collision between the pacman and intersections
@@ -161,6 +168,21 @@ class Game():
             else:
                 g.STEP = g.STEP_NORMAL
 
+            if g.stay_at_home:
+                # stay at home collision and go out conditions
+                if g.y - g.IMG.get_height() // 2 < BG_Y + 103 * FACTOR:
+                    g.y = BG_Y + 103 * FACTOR + g.IMG.get_height() // 2
+                    g.set_future_dir('DOWN')
+                    g.change_dir()
+                    if self.frames > g.GO_OUT_THRESHOLD:
+                        g.stay_at_home = False
+                elif g.y + g.IMG.get_height() // 2 > BG_Y + 128 * FACTOR:
+                    g.y = BG_Y + 128 * FACTOR - g.IMG.get_height() // 2
+                    g.set_future_dir('UP')
+                    g.change_dir()
+                    if self.frames > g.GO_OUT_THRESHOLD:
+                        g.stay_at_home = False
+
             g.move() # move according to the current_dir (it has to be before collision detection with intersections due to STEP changing)
             g.change_image() # an animation
 
@@ -169,24 +191,16 @@ class Game():
                 if self.collision_detection(g, i):
                     break
 
-            # stay at home collision condition
-            if g.stay_at_home:
-                if g.y - g.IMG.get_height() // 2 < BG_Y + 103 * FACTOR:
-                    g.y = BG_Y + 103 * FACTOR + g.IMG.get_height() // 2
-                    g.set_future_dir('DOWN')
-                    g.change_dir()
-                elif g.y + g.IMG.get_height() // 2 > BG_Y + 128 * FACTOR:
-                    g.y = BG_Y + 128 * FACTOR - g.IMG.get_height() // 2
-                    g.set_future_dir('UP')
-                    g.change_dir()
-
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if (obj1.TYPE == 'PACMAN' or obj1.TYPE == 'GHOST') and obj2.TYPE == 'INTERSECTION':
             if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
                 obj1.x = obj2.x # alignment to the center of obj2
                 obj1.y = obj2.y # alignment to the center of obj2
                 if obj1.TYPE == 'GHOST':
-                    obj1.generate_random_dir()
+                    if not obj1.stay_at_home:
+                        obj1.generate_random_dir()
+                    else:
+                        return False
                 if obj1.future_dir in obj2.dirs:
                     # if there is a possibility to change dir then do it firstly
                     obj1.change_dir() # assign future_dir to current_dir
@@ -222,12 +236,18 @@ class Game():
         ghost_step = 2/3 * step
         self.pacman = Pacman(112, 188, step)
         self.ghosts.append(Blinky(112, 92, ghost_step))
-        self.ghosts.append(Inky(96, 116, ghost_step))
-        self.ghosts.append(Pinky(112, 116, ghost_step))
-        self.ghosts.append(Clyde(128, 116, ghost_step))
+        self.ghosts.append(Inky(96, 116, ghost_step, 2 * self.GO_OUT_THRESHOLD))
+        self.ghosts.append(Pinky(112, 116, ghost_step, self.GO_OUT_THRESHOLD))
+        self.ghosts.append(Clyde(128, 116, ghost_step, 3 * self.GO_OUT_THRESHOLD))
 
         # static objects
         if reset_static_objects:
+            # out of the coordinate system (home and other points)
+            self.intersections.append(Intersection(112, 92, 'LEFT', 'RIGHT')) # above home
+            self.intersections.append(Intersection(96, 116, 'RIGHT')) # home's left side
+            self.intersections.append(Intersection(112, 116, 'UP')) # home's centre
+            self.intersections.append(Intersection(128, 116, 'LEFT')) # home's right side
+
             # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
             for row in range(1, 30): # from 1 to 29
                 for col in range(28): # from 0 to 27
