@@ -8,6 +8,10 @@ class Ghost(Pacman):
         super().__init__(x=x, y=y, STEP=STEP)
         self.IMG = None
         self.TYPE = 'GHOST'
+        self.STEP_NORMAL = STEP
+        self.STEP_SLOWER = STEP * 0.55
+        #self.FORCED_DIRS = ['LEFT', 'DOWN', 'LEFT', 'LEFT', 'UP', 'RIGHT', 'UP', 'LEFT', 'DOWN', \
+        # 'DOWN', 'DOWN'] # for testing purposes only
     
     # needed to be uncomment later
     # def draw(self, win):
@@ -17,6 +21,7 @@ class Ghost(Pacman):
     # a temporarily method, ultimately it will move smartly (AI?) as the original Pacman rules say
     def generate_random_dir(self):
         dir = random.choice(['LEFT', 'RIGHT', 'UP', 'DOWN'])
+        #dir = self.FORCED_DIRS.pop(0) # for testing purposes only
         self.set_future_dir(dir)
 
 class Blinky(Ghost):

@@ -94,6 +94,7 @@ class Game():
                 if self.pacman.decay():
                     pass # do nothing - let static objects animate until it finishes
                 else:
+                    self.lives -= 1
                     self.pacman = None
                     # game over condition
                     if self.lives <= 0:
@@ -134,24 +135,39 @@ class Game():
                 # collision between the pacman and ghosts
                 for g in self.ghosts:
                     if self.collision_detection(self.pacman, g):
-                        self.lives -= 1
                         self.ghosts = []
                         self.pacman.decaying = True
                         self.pacman.stop()
                         break
 
+                # the tunnel for the Pacman
+                if self.pacman.x + self.pacman.IMG.get_width() // 2 < BG_X:
+                    self.pacman.x = BG_X + BACKGROUND.get_width() + self.pacman.IMG.get_width() // 2
+                elif self.pacman.x - self.pacman.IMG.get_width() // 2 > BG_X + BACKGROUND.get_width():
+                    self.pacman.x = BG_X - self.pacman.IMG.get_width() // 2
+
         # an animation of a static object - a big ball
         for bb in self.big_balls:
             bb.change_image()
 
-        # collision between ghosts and intersections
         for g in self.ghosts:
+            # the tunnel for the ghosts (it has to be before collision detection with intersections due to STEP changing)
+            if g.x + g.IMG.get_width() // 2 < BG_X:
+                g.x = BG_X + BACKGROUND.get_width() + g.IMG.get_width() // 2
+            elif g.x - g.IMG.get_width() // 2 > BG_X + BACKGROUND.get_width():
+                g.x = BG_X - g.IMG.get_width() // 2
+            if g.y == BG_Y + 116 * FACTOR and (g.x < BG_X + 52 * FACTOR or g.x > BG_X + 172 * FACTOR):
+                g.STEP = g.STEP_SLOWER
+            else:
+                g.STEP = g.STEP_NORMAL
+
+            g.move() # move according to the current_dir (it has to be before collision detection with intersections due to STEP changing)
+            g.change_image() # an animation
+
+            # collision between ghosts and intersections
             for i in self.intersections:
                 if self.collision_detection(g, i):
                     break
-
-            g.move() # move according to the current_dir
-            g.change_image() # an animation
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if (obj1.TYPE == 'PACMAN' or obj1.TYPE == 'GHOST') and obj2.TYPE == 'INTERSECTION':
@@ -297,9 +313,7 @@ class Game():
                     elif row == 14:
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
-                        if col == 0: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT')) # the passage in the future
-                        elif col == 6:
+                        if col == 6:
                             self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
                         elif col == 9:
                             self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
@@ -307,8 +321,6 @@ class Game():
                             self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
                         elif col == 21:
                             self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
-                        elif col == 27:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT')) # the passage in the future
                     elif row == 15:
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
