@@ -3,7 +3,7 @@ from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR, WHITE, PACMAN_LIFE
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .intersection import Intersection
-from .ghosts import Blinky
+from .ghosts import Blinky, Inky, Pinky, Clyde
 from math import sqrt
 
 class Game():
@@ -169,6 +169,17 @@ class Game():
                 if self.collision_detection(g, i):
                     break
 
+            # stay at home collision condition
+            if g.stay_at_home:
+                if g.y - g.IMG.get_height() // 2 < BG_Y + 103 * FACTOR:
+                    g.y = BG_Y + 103 * FACTOR + g.IMG.get_height() // 2
+                    g.set_future_dir('DOWN')
+                    g.change_dir()
+                elif g.y + g.IMG.get_height() // 2 > BG_Y + 128 * FACTOR:
+                    g.y = BG_Y + 128 * FACTOR - g.IMG.get_height() // 2
+                    g.set_future_dir('UP')
+                    g.change_dir()
+
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if (obj1.TYPE == 'PACMAN' or obj1.TYPE == 'GHOST') and obj2.TYPE == 'INTERSECTION':
             if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
@@ -211,6 +222,9 @@ class Game():
         ghost_step = 2/3 * step
         self.pacman = Pacman(112, 188, step)
         self.ghosts.append(Blinky(112, 92, ghost_step))
+        self.ghosts.append(Inky(96, 116, ghost_step))
+        self.ghosts.append(Pinky(112, 116, ghost_step))
+        self.ghosts.append(Clyde(128, 116, ghost_step))
 
         # static objects
         if reset_static_objects:

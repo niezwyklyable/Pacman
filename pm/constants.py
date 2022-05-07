@@ -13,11 +13,13 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
-# assets
+# basic assets
 SPRITE_SHEET = load('assets/pacman1.png')
 BACKGROUND = scale(SPRITE_SHEET.subsurface(228, 0, 452-228, 248), (FACTOR*(452-228), FACTOR*248)) # (x, y, w, h)
 SMALL_BALL = scale(SPRITE_SHEET.subsurface(11, 11, 2, 2), (FACTOR*2, FACTOR*2))
 BIG_BALL = scale(SPRITE_SHEET.subsurface(8, 24, 8, 8), (FACTOR*8, FACTOR*8))
+
+# pacman's assets
 PACMAN_RIGHT_1 = scale(SPRITE_SHEET.subsurface(457, 1, 13, 13), (FACTOR*13, FACTOR*13))
 PACMAN_RIGHT_2 = scale(SPRITE_SHEET.subsurface(473, 1, 13, 13), (FACTOR*13, FACTOR*13))
 PACMAN_LEFT_1 = scale(SPRITE_SHEET.subsurface(457, 17, 13, 13), (FACTOR*13, FACTOR*13))
@@ -39,6 +41,9 @@ PACMAN_DECAY_8 = scale(SPRITE_SHEET.subsurface(619, 1, 9, 15), (FACTOR*9, FACTOR
 PACMAN_DECAY_9 = scale(SPRITE_SHEET.subsurface(637, 1, 5, 15), (FACTOR*5, FACTOR*15))
 PACMAN_DECAY_10 = scale(SPRITE_SHEET.subsurface(655, 1, 1, 15), (FACTOR*1, FACTOR*15))
 PACMAN_DECAY_11 = scale(SPRITE_SHEET.subsurface(666, 6, 11, 11), (FACTOR*11, FACTOR*11))
+
+# ghosts' assets
+# Blinky
 BLINKY_RIGHT_1 = scale(SPRITE_SHEET.subsurface(457, 65, 14, 14), (FACTOR*14, FACTOR*14))
 BLINKY_RIGHT_2 = scale(SPRITE_SHEET.subsurface(473, 65, 14, 14), (FACTOR*14, FACTOR*14))
 BLINKY_LEFT_1 = scale(SPRITE_SHEET.subsurface(489, 65, 14, 14), (FACTOR*14, FACTOR*14))
@@ -47,6 +52,33 @@ BLINKY_UP_1 = scale(SPRITE_SHEET.subsurface(521, 65, 14, 14), (FACTOR*14, FACTOR
 BLINKY_UP_2 = scale(SPRITE_SHEET.subsurface(537, 65, 14, 14), (FACTOR*14, FACTOR*14))
 BLINKY_DOWN_1 = scale(SPRITE_SHEET.subsurface(553, 65, 14, 14), (FACTOR*14, FACTOR*14))
 BLINKY_DOWN_2 = scale(SPRITE_SHEET.subsurface(569, 65, 14, 14), (FACTOR*14, FACTOR*14))
+# Pinky
+PINKY_RIGHT_1 = scale(SPRITE_SHEET.subsurface(457, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_RIGHT_2 = scale(SPRITE_SHEET.subsurface(473, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_LEFT_1 = scale(SPRITE_SHEET.subsurface(489, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_LEFT_2 = scale(SPRITE_SHEET.subsurface(505, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_UP_1 = scale(SPRITE_SHEET.subsurface(521, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_UP_2 = scale(SPRITE_SHEET.subsurface(537, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_DOWN_1 = scale(SPRITE_SHEET.subsurface(553, 81, 14, 14), (FACTOR*14, FACTOR*14))
+PINKY_DOWN_2 = scale(SPRITE_SHEET.subsurface(569, 81, 14, 14), (FACTOR*14, FACTOR*14))
+# Inky
+INKY_RIGHT_1 = scale(SPRITE_SHEET.subsurface(457, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_RIGHT_2 = scale(SPRITE_SHEET.subsurface(473, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_LEFT_1 = scale(SPRITE_SHEET.subsurface(489, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_LEFT_2 = scale(SPRITE_SHEET.subsurface(505, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_UP_1 = scale(SPRITE_SHEET.subsurface(521, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_UP_2 = scale(SPRITE_SHEET.subsurface(537, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_DOWN_1 = scale(SPRITE_SHEET.subsurface(553, 97, 14, 14), (FACTOR*14, FACTOR*14))
+INKY_DOWN_2 = scale(SPRITE_SHEET.subsurface(569, 97, 14, 14), (FACTOR*14, FACTOR*14))
+# Clyde
+CLYDE_RIGHT_1 = scale(SPRITE_SHEET.subsurface(457, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_RIGHT_2 = scale(SPRITE_SHEET.subsurface(473, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_LEFT_1 = scale(SPRITE_SHEET.subsurface(489, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_LEFT_2 = scale(SPRITE_SHEET.subsurface(505, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_UP_1 = scale(SPRITE_SHEET.subsurface(521, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_UP_2 = scale(SPRITE_SHEET.subsurface(537, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_DOWN_1 = scale(SPRITE_SHEET.subsurface(553, 113, 14, 14), (FACTOR*14, FACTOR*14))
+CLYDE_DOWN_2 = scale(SPRITE_SHEET.subsurface(569, 113, 14, 14), (FACTOR*14, FACTOR*14))
 
 # background reference point
 BG_X = (WIDTH - BACKGROUND.get_width()) // 2
