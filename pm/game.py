@@ -5,9 +5,11 @@ from .pacman import Pacman
 from .intersection import Intersection
 from .ghosts import Blinky, Inky, Pinky, Clyde
 from math import sqrt
+from .fruit import Fruit
 
 class Game():
     GO_OUT_THRESHOLD = 250  # basic number of frames to go out (for ghosts)
+    BALLS_THRESHOLD = 70 # number of small balls needed to collect due to fruit to pop up
     
     def __init__(self, win):
         self.win = win
@@ -21,6 +23,8 @@ class Game():
         self.big_balls = []
         self.ghosts = []
         self.frames = 0
+        self.fruit = None
+        self.eaten_balls = 0
         if not next_level:
             self.gameover = False
             self.level = 1
@@ -53,6 +57,10 @@ class Game():
         # points of intersections (for testing purposes)
         for i in self.intersections:
             i.draw(self.win)
+
+        # the fruit
+        if self.fruit:
+            self.fruit.draw(self.win)
 
         # an upper bar
         font = pygame.font.SysFont('comicsans', 20)
@@ -94,6 +102,18 @@ class Game():
             self.level += 1
             self.restart(next_level=True)
 
+        # the popping up of a fruit
+        if not self.fruit:
+            if self.eaten_balls >= self.BALLS_THRESHOLD:
+                self.fruit = Fruit(112, 140, self.level)
+
+        # the disappearance of a fruit
+        if self.fruit:
+            self.fruit.frames += 1
+            if self.fruit.frames >= self.fruit.HIDE_THRESHOLD:
+                self.fruit = None
+                self.eaten_balls = 0
+
         if self.pacman:
             # the decaying animation of the pacman
             if self.pacman.decaying:
@@ -107,6 +127,8 @@ class Game():
                         self.gameover = True
                     else:
                         self.frames = 0
+                        self.fruit = None
+                        self.eaten_balls = 0
                         self.create_sprites(self.level, reset_static_objects=False) # reset only dynamic objects (the Pacman and ghosts)
             else:
                 # collision between the pacman and intersections
@@ -132,6 +154,7 @@ class Game():
                     if self.collision_detection(self.pacman, sb):
                         self.small_balls.remove(sb)
                         self.score += 10
+                        self.eaten_balls += 1
 
                 # collision between the pacman and big balls
                 for bb in self.big_balls:
@@ -229,12 +252,12 @@ class Game():
         if lvl == 1:
             step = 1
         elif lvl == 2:
-            step = 2
+            step = 1.5
         else:
-            step = 3
+            step = 2
 
         ghost_step = 2/3 * step
-        self.pacman = Pacman(112, 188, step)
+        self.pacman = Pacman(112, 188, 2)
         self.ghosts.append(Blinky(112, 92, ghost_step))
         self.ghosts.append(Inky(96, 116, ghost_step, 2 * self.GO_OUT_THRESHOLD))
         self.ghosts.append(Pinky(112, 116, ghost_step, self.GO_OUT_THRESHOLD))

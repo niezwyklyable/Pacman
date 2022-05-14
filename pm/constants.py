@@ -80,6 +80,16 @@ CLYDE_UP_2 = scale(SPRITE_SHEET.subsurface(537, 113, 14, 14), (FACTOR*14, FACTOR
 CLYDE_DOWN_1 = scale(SPRITE_SHEET.subsurface(553, 113, 14, 14), (FACTOR*14, FACTOR*14))
 CLYDE_DOWN_2 = scale(SPRITE_SHEET.subsurface(569, 113, 14, 14), (FACTOR*14, FACTOR*14))
 
+# fruit's assets
+FRUIT_1 = scale(SPRITE_SHEET.subsurface(490, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_2 = scale(SPRITE_SHEET.subsurface(506, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_3 = scale(SPRITE_SHEET.subsurface(522, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_4 = scale(SPRITE_SHEET.subsurface(538, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_5 = scale(SPRITE_SHEET.subsurface(555, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_6 = scale(SPRITE_SHEET.subsurface(570, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_7 = scale(SPRITE_SHEET.subsurface(586, 49, 14, 14), (FACTOR*14, FACTOR*14))
+FRUIT_8 = scale(SPRITE_SHEET.subsurface(604, 49, 14, 14), (FACTOR*14, FACTOR*14))
+
 # background reference point
 BG_X = (WIDTH - BACKGROUND.get_width()) // 2
 BG_Y = (HEIGHT - BACKGROUND.get_height()) // 2
