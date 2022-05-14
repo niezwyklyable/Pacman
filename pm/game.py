@@ -51,21 +51,21 @@ class Game():
         if self.pacman:
             self.pacman.draw(self.win)
 
-        # ghosts
-        for obj in self.ghosts:
-            obj.draw(self.win)
-
-        # points of intersections (for testing purposes)
-        for i in self.intersections:
-            i.draw(self.win)
-
         # the fruit
         if self.fruit:
             self.fruit.draw(self.win)
 
+        # ghosts
+        for obj in self.ghosts:
+            obj.draw(self.win)
+
         # the fruit caption
         if self.fruit_caption:
             self.fruit_caption.draw(self.win)
+
+        # points of intersections (for testing purposes)
+        for i in self.intersections:
+            i.draw(self.win)
 
         # an upper bar
         font = pygame.font.SysFont('comicsans', 20)
