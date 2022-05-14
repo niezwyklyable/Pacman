@@ -90,6 +90,16 @@ FRUIT_6 = scale(SPRITE_SHEET.subsurface(570, 49, 14, 14), (FACTOR*14, FACTOR*14)
 FRUIT_7 = scale(SPRITE_SHEET.subsurface(586, 49, 14, 14), (FACTOR*14, FACTOR*14))
 FRUIT_8 = scale(SPRITE_SHEET.subsurface(604, 49, 14, 14), (FACTOR*14, FACTOR*14))
 
+# fruit's captions
+FRUIT_CAPTION_1 = scale(SPRITE_SHEET.subsurface(458, 148, 13, 7), (FACTOR*13, FACTOR*7))
+FRUIT_CAPTION_2 = scale(SPRITE_SHEET.subsurface(472, 148, 15, 7), (FACTOR*15, FACTOR*7))
+FRUIT_CAPTION_3 = scale(SPRITE_SHEET.subsurface(488, 148, 15, 7), (FACTOR*15, FACTOR*7))
+FRUIT_CAPTION_4 = scale(SPRITE_SHEET.subsurface(504, 148, 15, 7), (FACTOR*15, FACTOR*7))
+FRUIT_CAPTION_5 = scale(SPRITE_SHEET.subsurface(520, 148, 18, 7), (FACTOR*18, FACTOR*7))
+FRUIT_CAPTION_6 = scale(SPRITE_SHEET.subsurface(518, 164, 20, 7), (FACTOR*20, FACTOR*7))
+FRUIT_CAPTION_7 = scale(SPRITE_SHEET.subsurface(518, 180, 20, 7), (FACTOR*20, FACTOR*7))
+FRUIT_CAPTION_8 = scale(SPRITE_SHEET.subsurface(518, 196, 20, 7), (FACTOR*20, FACTOR*7))
+
 # background reference point
 BG_X = (WIDTH - BACKGROUND.get_width()) // 2
 BG_Y = (HEIGHT - BACKGROUND.get_height()) // 2
