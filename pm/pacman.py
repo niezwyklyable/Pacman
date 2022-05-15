@@ -95,7 +95,7 @@ class Pacman(Sprite):
             return # if Pacman's current_dir is None
 
         states = tuple(enumerate(t))
-        if self.img_state == len(states) - 1:
+        if self.img_state >= len(states) - 1:
             self.IMG = states[0][1] # PACMAN_FULL
             self.img_state = 0
             return

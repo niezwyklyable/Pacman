@@ -79,6 +79,15 @@ CLYDE_UP_1 = scale(SPRITE_SHEET.subsurface(521, 113, 14, 14), (FACTOR*14, FACTOR
 CLYDE_UP_2 = scale(SPRITE_SHEET.subsurface(537, 113, 14, 14), (FACTOR*14, FACTOR*14))
 CLYDE_DOWN_1 = scale(SPRITE_SHEET.subsurface(553, 113, 14, 14), (FACTOR*14, FACTOR*14))
 CLYDE_DOWN_2 = scale(SPRITE_SHEET.subsurface(569, 113, 14, 14), (FACTOR*14, FACTOR*14))
+# other
+BLUE_1 = scale(SPRITE_SHEET.subsurface(585, 65, 14, 14), (FACTOR*14, FACTOR*14))
+BLUE_2 = scale(SPRITE_SHEET.subsurface(601, 65, 14, 14), (FACTOR*14, FACTOR*14))
+GREY_1 = scale(SPRITE_SHEET.subsurface(617, 65, 14, 14), (FACTOR*14, FACTOR*14))
+GREY_2 = scale(SPRITE_SHEET.subsurface(633, 65, 14, 14), (FACTOR*14, FACTOR*14))
+EYES_RIGHT = scale(SPRITE_SHEET.subsurface(585, 81, 14, 14), (FACTOR*14, FACTOR*14))
+EYES_LEFT = scale(SPRITE_SHEET.subsurface(601, 81, 14, 14), (FACTOR*14, FACTOR*14))
+EYES_UP = scale(SPRITE_SHEET.subsurface(617, 81, 14, 14), (FACTOR*14, FACTOR*14))
+EYES_DOWN = scale(SPRITE_SHEET.subsurface(633, 81, 14, 14), (FACTOR*14, FACTOR*14))
 
 # fruit's assets
 FRUIT_1 = scale(SPRITE_SHEET.subsurface(490, 49, 14, 14), (FACTOR*14, FACTOR*14))

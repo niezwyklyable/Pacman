@@ -173,6 +173,16 @@ class Game():
                     if self.collision_detection(self.pacman, bb):
                         self.big_balls.remove(bb)
                         self.score += 50
+                        for g in self.ghosts:
+                            if g.state == 'NORMAL' or g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
+                                if g.state == 'NORMAL' and not g.stay_at_home:
+                                    for i in self.intersections:
+                                        if self.collision_detection(g, i):
+                                            break
+                                    else:
+                                        g.change_dir_to_opposite() # change dir only when ghost is between intersections
+                                
+                                g.change_state('FULL_BLUE')
 
                 # collision between the pacman and ghosts
                 for g in self.ghosts:
@@ -226,6 +236,18 @@ class Game():
                     if self.frames > g.GO_OUT_THRESHOLD:
                         g.stay_at_home = False
 
+            # the first stage of the recovery of a ghost (changing state from FULL BLUE to HALF BLUE)
+            if g.state == 'FULL_BLUE':
+                g.frames += 1
+                if g.frames >= g.HALF_BLUE_THRESHOLD:
+                    g.change_state('HALF_BLUE')
+
+            # the second stage of the recovery of a ghost (changing state from HALF BLUE to NORMAL)
+            if g.state == 'HALF_BLUE':
+                g.frames += 1
+                if g.frames >= g.NORMAL_THRESHOLD:
+                    g.change_state('NORMAL')
+
             g.move() # move according to the current_dir (it has to be before collision detection with intersections due to STEP changing)
             g.change_image() # an animation
 
@@ -274,18 +296,22 @@ class Game():
     def create_sprites(self, lvl, reset_static_objects=True):
         # dynamic objects
         if lvl == 1:
-            step = 1
+            ghost_step = 1
+            half_blue_threshold = 400
         elif lvl == 2:
-            step = 1.5
+            ghost_step = 1.5
+            half_blue_threshold = 300
         else:
-            step = 2
+            ghost_step = 2
+            half_blue_threshold = 200
 
-        ghost_step = 2/3 * step
+        ghost_step = 2/3 * ghost_step # global scale
+        half_blue_threshold = 1 * half_blue_threshold # global scale
         self.pacman = Pacman(112, 188, 2)
-        self.ghosts.append(Blinky(112, 92, ghost_step))
-        self.ghosts.append(Inky(96, 116, ghost_step, 2 * self.GO_OUT_THRESHOLD))
-        self.ghosts.append(Pinky(112, 116, ghost_step, self.GO_OUT_THRESHOLD))
-        self.ghosts.append(Clyde(128, 116, ghost_step, 3 * self.GO_OUT_THRESHOLD))
+        self.ghosts.append(Blinky(112, 92, ghost_step, 0, half_blue_threshold))
+        self.ghosts.append(Inky(96, 116, ghost_step, 2 * self.GO_OUT_THRESHOLD, half_blue_threshold))
+        self.ghosts.append(Pinky(112, 116, ghost_step, self.GO_OUT_THRESHOLD, half_blue_threshold))
+        self.ghosts.append(Clyde(128, 116, ghost_step, 3 * self.GO_OUT_THRESHOLD, half_blue_threshold))
 
         # static objects
         if reset_static_objects:
