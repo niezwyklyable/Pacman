@@ -3,11 +3,9 @@ from pygame import draw
 from .constants import RED
 
 class Intersection(Sprite):
-    def __init__(self, x, y, *dirs):
+    def __init__(self, x, y, **kwargs):
         super().__init__(IMG=None, TYPE='INTERSECTION', x=x, y=y)
-        self.dirs = []
-        for a in dirs:
-            self.dirs.append(a)
+        self.dirs = kwargs
 
     # overriding this method because objects instantiated from this class will be invisible
     def draw(self, win):

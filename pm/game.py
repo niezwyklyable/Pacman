@@ -316,10 +316,10 @@ class Game():
         # static objects
         if reset_static_objects:
             # out of the coordinate system (home and other points)
-            self.intersections.append(Intersection(112, 92, 'LEFT', 'RIGHT')) # above home
-            self.intersections.append(Intersection(96, 116, 'RIGHT')) # home's left side
-            self.intersections.append(Intersection(112, 116, 'UP')) # home's centre
-            self.intersections.append(Intersection(128, 116, 'LEFT')) # home's right side
+            self.intersections.append(Intersection(112, 92, LEFT=1.5, RIGHT=1.5)) # above home
+            self.intersections.append(Intersection(96, 116, RIGHT=2)) # home's left side
+            self.intersections.append(Intersection(112, 116, UP=3)) # home's centre
+            self.intersections.append(Intersection(128, 116, LEFT=2)) # home's right side
 
             # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
             for row in range(1, 30): # from 1 to 29
@@ -328,17 +328,17 @@ class Game():
                         if col not in (0, 13, 14, 27):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, RIGHT=5, DOWN=4))
                         elif col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=5, RIGHT=6, DOWN=4))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=6, DOWN=4))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, RIGHT=6, DOWN=4))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=6, RIGHT=5, DOWN=4))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=5, DOWN=4))
                     elif row == 2:
                         if col in (1, 6, 12, 15, 21, 26):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -354,21 +354,21 @@ class Game():
                         if col not in (0, 27):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=4, RIGHT=5, DOWN=3))
                         elif col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=4, LEFT=5, RIGHT=3, DOWN=3))
                         elif col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, RIGHT=3, DOWN=3))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, UP=4, RIGHT=3))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, UP=4, RIGHT=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, RIGHT=3, DOWN=3))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=4, LEFT=3, RIGHT=5, DOWN=3))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=4, LEFT=5, DOWN=3))
                     elif row == 6:
                         if col in (1, 6, 9, 18, 21, 26):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -379,21 +379,21 @@ class Game():
                         if col not in (0, 7, 8, 13, 14, 19, 20, 27):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=5))
                         elif col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=5, DOWN=6))
                         elif col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=3))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, DOWN=3))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, RIGHT=3, DOWN=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=5, DOWN=6))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=5))
                     elif row == 9:
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -404,13 +404,13 @@ class Game():
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, RIGHT=3))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, RIGHT=1.5))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=1.5, RIGHT=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, LEFT=3))
                     elif row == 12:
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -421,13 +421,13 @@ class Game():
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=6, LEFT=12, RIGHT=3, DOWN=6))
                         elif col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, DOWN=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=3, DOWN=3))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=6, LEFT=3, RIGHT=12, DOWN=6))
                     elif row == 15:
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -438,9 +438,9 @@ class Game():
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=9, DOWN=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=9, DOWN=3))
                     elif row == 18:
                         if col in (6, 21):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -451,21 +451,21 @@ class Game():
                         if col not in (0, 13, 14, 27):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, RIGHT=5))
                         elif col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=6, LEFT=5, RIGHT=3, DOWN=3))
                         elif col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, RIGHT=3))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, DOWN=3))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, RIGHT=3, DOWN=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, RIGHT=3))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=6, RIGHT=5, LEFT=3, DOWN=3))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, LEFT=5))
                     elif row == 21:
                         if col in (1, 6, 12, 15, 21, 26):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -478,25 +478,25 @@ class Game():
                         elif col in (1, 26):
                             self.big_balls.append(BigBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=2))
                         elif col == 3:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=2, DOWN=3))
                         elif col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=3, DOWN=3))
                         elif col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, LEFT=3, RIGHT=3))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, UP=3, RIGHT=3))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, UP=3, RIGHT=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, LEFT=3, RIGHT=3))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, DOWN=3))
                         elif col == 24:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, RIGHT=2))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=2))
                     elif row == 24:
                         if col in (3, 6, 9, 18, 21, 24):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -507,25 +507,25 @@ class Game():
                         if col not in (0, 7, 8, 13, 14, 19, 20, 27):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, RIGHT=2))
                         elif col == 3:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=2, RIGHT=3))
                         elif col == 6:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3))
                         elif col == 9:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=3))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'LEFT', 'DOWN'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, LEFT=3, DOWN=3))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, RIGHT=3))
                         elif col == 18:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3))
                         elif col == 21:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=3))
                         elif col == 24:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, RIGHT=2))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'DOWN', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, DOWN=3, LEFT=2))
                     elif row == 27:
                         if col in (1, 12, 15, 26):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
@@ -536,10 +536,10 @@ class Game():
                         if col not in (0, 27):
                             self.small_balls.append(SmallBall((col - 1) * 8 + 12, (row - 1) * 8 + 12))
                         if col == 1: 
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, RIGHT=11))
                         elif col == 12:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=11, RIGHT=3))
                         elif col == 15:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT', 'RIGHT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=3, RIGHT=11))
                         elif col == 26:
-                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, 'UP', 'LEFT'))
+                            self.intersections.append(Intersection((col - 1) * 8 + 12, (row - 1) * 8 + 12, UP=3, LEFT=11))
