@@ -13,7 +13,8 @@ class Ghost(Pacman):
         self.IMG = None
         self.TYPE = 'GHOST'
         self.STEP_NORMAL = STEP
-        self.STEP_SLOWER = STEP * 0.55
+        self.STEP_SLOWER = STEP * 0.55 # in the tunnel
+        self.STEP_FASTER = STEP * 2 # during home returning
         self.stay_at_home = True # if it is True the ghost cannot escape the home (the centre of the map)
         self.GO_OUT_THRESHOLD = GO_OUT_THRESHOLD # number of frames to go out (escape the home)
         #self.FORCED_DIRS = ['LEFT', 'DOWN', 'LEFT', 'LEFT', 'UP', 'RIGHT', 'UP', 'LEFT', 'DOWN', \
@@ -36,6 +37,8 @@ class Ghost(Pacman):
         self.EYES_UP = [EYES_UP]
         self.EYES_DOWN = [EYES_DOWN]
         self.frames = 0
+        self.eaten = False # when it is True it means that the ghost was eaten by Pacman but still not started path finding process
+        self.path = [] # list of dirs for the ghost to reach the goal (home center)
 
     def change_state(self, state):
         if state == 'NORMAL':
@@ -59,6 +62,8 @@ class Ghost(Pacman):
             self.STATES_DOWN = self.HALF_BLUE
         elif state == 'EYES':
             self.state = 'EYES'
+            self.eaten = True
+            self.STEP = self.STEP_FASTER
             self.STATES_LEFT = self.EYES_LEFT
             self.STATES_RIGHT = self.EYES_RIGHT
             self.STATES_UP = self.EYES_UP
@@ -73,6 +78,13 @@ class Ghost(Pacman):
     def generate_random_dir(self):
         dir = random.choice(['LEFT', 'RIGHT', 'UP', 'DOWN'])
         #dir = self.FORCED_DIRS.pop(0) # for testing purposes only
+        self.set_future_dir(dir)
+
+    def take_dir_to_go_home(self):
+        if self.path:
+            dir = self.path.pop()
+        else:
+            dir = 'DOWN' # the last step to go home
         self.set_future_dir(dir)
 
     def change_dir_to_opposite(self):

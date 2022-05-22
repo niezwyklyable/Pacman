@@ -6,6 +6,7 @@ from .intersection import Intersection
 from .ghosts import Blinky, Inky, Pinky, Clyde
 from math import sqrt
 from .fruit import Fruit, FruitCaption
+from queue import PriorityQueue
 
 class Game():
     GO_OUT_THRESHOLD = 250  # basic number of frames to go out (for ghosts)
@@ -31,6 +32,8 @@ class Game():
             self.level = 1
             self.score = 0
             self.lives = 3
+        self.home_center = None # needed for path finding algorithm
+        self.end_node = None # needed for path finding algorithm
         self.create_sprites(self.level)
 
     def render(self):
@@ -187,9 +190,12 @@ class Game():
                 # collision between the pacman and ghosts
                 for g in self.ghosts:
                     if self.collision_detection(self.pacman, g):
-                        self.ghosts = []
-                        self.pacman.decaying = True
-                        self.pacman.stop()
+                        if g.state == 'NORMAL':
+                            self.ghosts = []
+                            self.pacman.decaying = True
+                            self.pacman.stop()
+                        elif g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
+                            g.change_state('EYES')
                         break
 
                 # collision between the pacman and the fruit
@@ -216,10 +222,11 @@ class Game():
                 g.x = BG_X + BACKGROUND.get_width() + g.IMG.get_width() // 2
             elif g.x - g.IMG.get_width() // 2 > BG_X + BACKGROUND.get_width():
                 g.x = BG_X - g.IMG.get_width() // 2
-            if g.y == BG_Y + 116 * FACTOR and (g.x < BG_X + 52 * FACTOR or g.x > BG_X + 172 * FACTOR):
-                g.STEP = g.STEP_SLOWER
-            else:
-                g.STEP = g.STEP_NORMAL
+            if g.state != 'EYES': # do not change the ghost's step if the ghost's state is EYES (keep STEP_FASTER value)
+                if g.y == BG_Y + 116 * FACTOR and (g.x < BG_X + 52 * FACTOR or g.x > BG_X + 172 * FACTOR):
+                    g.STEP = g.STEP_SLOWER
+                else:
+                    g.STEP = g.STEP_NORMAL
 
             if g.stay_at_home:
                 # stay at home collision and go out conditions
@@ -254,6 +261,10 @@ class Game():
             # collision between ghosts and intersections
             for i in self.intersections:
                 if self.collision_detection(g, i):
+                    if g.eaten: # needed for call the A* algorithm only once
+                        g.eaten = False
+                        g.path = self.a_star_algorithm(start_node=i) # assign the path to the current ghost
+                        g.stop() # it is needed to starting the path from the proper node (start node, not the node next to the start node)
                     break
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
@@ -262,10 +273,21 @@ class Game():
                 obj1.x = obj2.x # alignment to the center of obj2
                 obj1.y = obj2.y # alignment to the center of obj2
                 if obj1.TYPE == 'GHOST':
-                    if not obj1.stay_at_home:
-                        obj1.generate_random_dir()
-                    else:
+                    if obj1.stay_at_home:
                         return False
+                    if obj1.state != 'EYES':
+                        obj1.generate_random_dir()
+                    if obj1.state == 'EYES' and not obj1.eaten:
+                        obj1.take_dir_to_go_home() # use the path from path finding algorithm to back home
+                        # the last step to return home
+                        if obj2 is self.end_node:
+                            obj1.change_dir()
+                            return True
+                        # back to NORMAL state
+                        if obj2 is self.home_center:
+                            obj1.change_state('NORMAL')
+                            obj1.set_future_dir('UP')
+                        
                 if obj1.future_dir in obj2.dirs:
                     # if there is a possibility to change dir then do it firstly
                     obj1.change_dir() # assign future_dir to current_dir
@@ -293,6 +315,77 @@ class Game():
 
         return False
 
+    # heuristic part of A* algorithm
+    def h(self, n1, n2):
+        result = abs(n1.x - n2.x) + abs(n1.y - n2.y)
+        result /= FACTOR
+        result /= 8
+        return result
+
+    # build a path from the end node to the start node using the dictionary came_from (stepping node by node)
+    def create_path(self, came_from, current):
+        path = []
+        while current in came_from:
+            current, dir = came_from[current]
+            path.append(dir)
+        return path # returns the path starting from the last dir !!! (reversed path - the ghost popping items from the end so for him is the first move)
+
+    # A* path finding algorithm
+    def a_star_algorithm(self, start_node):
+        count = 0
+        open_set = PriorityQueue() # it sorts items out in ascending order by the first element (if the first elements have the same value it sorts by the second element, so thats why var count is needed)
+        came_from = {} # thanks to this dict we can reconstruct the shortest path that algorithm traverses through for us
+        g_score = {node: float("inf") for node in self.intersections} # G score is an obligatory and basic component of this algorithm
+        g_score[start_node] = 0
+        f_score = {node: float("inf") for node in self.intersections} # F score = G score + H score
+        f_score[start_node] = self.h(start_node, self.end_node) # H score is not obligatory component but it helps with reaching faster the end node (less items in open set to sort)
+        open_set.put((f_score[start_node], count, start_node))
+        open_set_hash = {start_node} # there is no possisility to check if the priority queue has the specific item so we need to save this info in the set
+
+        while not open_set.empty():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+            current_node = open_set.get()[2] # always returns the node with the minimum F score
+            open_set_hash.remove(current_node)
+
+            # goal reaching
+            if current_node is self.end_node:
+                path = self.create_path(came_from, current_node)
+                return path
+
+            # create a temporary part of the graph
+            neighbor_nodes = set()
+            for node in self.intersections:
+                for dir, value in current_node.dirs.items():
+                    distance = 0
+                    if current_node.x == node.x:
+                        if dir == 'UP':
+                            distance = (current_node.y - node.y) / 8 / FACTOR
+                        elif dir == 'DOWN':
+                            distance = -1 * (current_node.y - node.y) / 8 / FACTOR
+                    elif current_node.y == node.y:
+                        if dir == 'LEFT':
+                            distance = (current_node.x - node.x) / 8 / FACTOR
+                        elif dir == 'RIGHT':
+                            distance = -1 * (current_node.x - node.x) / 8 / FACTOR
+                    if distance == value:
+                        neighbor_nodes.add((node, dir, value))
+
+            for node, dir, value in neighbor_nodes:
+                temp_g_score = g_score[current_node] + value # extend the neighbor node's G score by the edge's weight (distance) between current node and neighbor node
+
+                if temp_g_score < g_score[node]: # thanks to that line, the algorithm does not go the same path back
+                    # update the dictionaries
+                    came_from[node] = (current_node, dir)
+                    g_score[node] = temp_g_score
+                    f_score[node] = temp_g_score + self.h(node, self.end_node)
+                    if node not in open_set_hash:
+                        count += 1
+                        open_set.put((f_score[node], count, node)) # add to the open set all the new neighbor nodes which are not in there yet
+                        open_set_hash.add(node)
+
     def create_sprites(self, lvl, reset_static_objects=True):
         # dynamic objects
         if lvl == 1:
@@ -316,9 +409,11 @@ class Game():
         # static objects
         if reset_static_objects:
             # out of the coordinate system (home and other points)
-            self.intersections.append(Intersection(112, 92, LEFT=1.5, RIGHT=1.5)) # above home
+            self.end_node = Intersection(112, 92, LEFT=1.5, RIGHT=1.5) # above home
+            self.intersections.append(self.end_node)
             self.intersections.append(Intersection(96, 116, RIGHT=2)) # home's left side
-            self.intersections.append(Intersection(112, 116, UP=3)) # home's centre
+            self.home_center = Intersection(112, 116, UP=3) # home's centre
+            self.intersections.append(self.home_center)
             self.intersections.append(Intersection(128, 116, LEFT=2)) # home's right side
 
             # 2D coordinate system - height: 31 (rows), width: 28 (cols) with the external border
