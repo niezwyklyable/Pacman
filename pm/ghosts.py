@@ -4,8 +4,10 @@ from .constants import BLINKY_RIGHT_1, BLINKY_RIGHT_2, BLINKY_LEFT_1, BLINKY_LEF
     PINKY_DOWN_1, PINKY_DOWN_2, PINKY_LEFT_1, PINKY_LEFT_2, PINKY_UP_1, PINKY_UP_2, PINKY_RIGHT_1, PINKY_RIGHT_2, \
     INKY_DOWN_1, INKY_DOWN_2, INKY_LEFT_1, INKY_LEFT_2, INKY_RIGHT_1, INKY_RIGHT_2, INKY_UP_1, INKY_UP_2, \
     CLYDE_DOWN_1, CLYDE_DOWN_2, CLYDE_LEFT_1, CLYDE_LEFT_2, CLYDE_RIGHT_1, CLYDE_RIGHT_2, CLYDE_UP_1,\
-    CLYDE_UP_2, BLUE_1, BLUE_2, GREY_1, GREY_2, EYES_DOWN, EYES_LEFT, EYES_RIGHT, EYES_UP
+    CLYDE_UP_2, BLUE_1, BLUE_2, GREY_1, GREY_2, EYES_DOWN, EYES_LEFT, EYES_RIGHT, EYES_UP, \
+    GHOST_CAPTION_1, GHOST_CAPTION_2, GHOST_CAPTION_3, GHOST_CAPTION_4
 import random
+from .sprite import Sprite
 
 class Ghost(Pacman):
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
@@ -151,3 +153,21 @@ class Clyde(Ghost):
         self.STATES_DOWN_NORMAL = [CLYDE_DOWN_1, CLYDE_DOWN_2]
         self.change_state('NORMAL')
         #self.SUBTYPE = 'CLYDE'
+
+class GhostCaption(Sprite):
+    HIDE_THRESHOLD = 50
+
+    def __init__(self, x, y, ghost_score):
+        super().__init__(IMG=None, TYPE='GHOST_CAPTION', x=x, y=y)
+        if ghost_score == 200:
+            self.type_num = 0
+        elif ghost_score == 400:
+            self.type_num = 1
+        elif ghost_score == 800:
+            self.type_num = 2
+        elif ghost_score == 1600:
+            self.type_num = 3
+
+        self.GHOST_CAPTIONS = [GHOST_CAPTION_1, GHOST_CAPTION_2, GHOST_CAPTION_3, GHOST_CAPTION_4]
+        self.IMG = self.GHOST_CAPTIONS[self.type_num]
+        self.frames = 0

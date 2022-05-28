@@ -109,6 +109,12 @@ FRUIT_CAPTION_6 = scale(SPRITE_SHEET.subsurface(518, 164, 20, 7), (FACTOR*20, FA
 FRUIT_CAPTION_7 = scale(SPRITE_SHEET.subsurface(518, 180, 20, 7), (FACTOR*20, FACTOR*7))
 FRUIT_CAPTION_8 = scale(SPRITE_SHEET.subsurface(518, 196, 20, 7), (FACTOR*20, FACTOR*7))
 
+# ghosts' captions
+GHOST_CAPTION_1 = scale(SPRITE_SHEET.subsurface(456, 133, 15, 7), (FACTOR*15, FACTOR*7))
+GHOST_CAPTION_2 = scale(SPRITE_SHEET.subsurface(472, 133, 15, 7), (FACTOR*15, FACTOR*7))
+GHOST_CAPTION_3 = scale(SPRITE_SHEET.subsurface(488, 133, 15, 7), (FACTOR*15, FACTOR*7))
+GHOST_CAPTION_4 = scale(SPRITE_SHEET.subsurface(504, 133, 16, 7), (FACTOR*16, FACTOR*7))
+
 # background reference point
 BG_X = (WIDTH - BACKGROUND.get_width()) // 2
 BG_Y = (HEIGHT - BACKGROUND.get_height()) // 2

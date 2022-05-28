@@ -3,7 +3,7 @@ from .constants import BACKGROUND, BLACK, BG_X, BG_Y, FACTOR, WHITE, PACMAN_LIFE
 from .balls import SmallBall, BigBall
 from .pacman import Pacman
 from .intersection import Intersection
-from .ghosts import Blinky, Inky, Pinky, Clyde
+from .ghosts import Blinky, Inky, Pinky, Clyde, GhostCaption
 from math import sqrt
 from .fruit import Fruit, FruitCaption
 from queue import PriorityQueue
@@ -26,7 +26,9 @@ class Game():
         self.frames = 0
         self.fruit = None
         self.fruit_caption = None
+        self.ghost_caption = None
         self.eaten_balls = 0
+        self.ghost_score = 200 # basic of bonus points for eating the blue ghost 
         if not next_level:
             self.gameover = False
             self.level = 1
@@ -65,6 +67,10 @@ class Game():
         # the fruit caption
         if self.fruit_caption:
             self.fruit_caption.draw(self.win)
+        
+        # the ghost caption
+        if self.ghost_caption:
+            self.ghost_caption.draw(self.win)
 
         # points of intersections (for testing purposes)
         for i in self.intersections:
@@ -128,6 +134,12 @@ class Game():
             if self.fruit_caption.frames >= self.fruit_caption.HIDE_THRESHOLD:
                 self.fruit_caption = None
 
+        # the disappearance of a ghost caption
+        if self.ghost_caption:
+            self.ghost_caption.frames += 1
+            if self.ghost_caption.frames >= self.ghost_caption.HIDE_THRESHOLD:
+                self.ghost_caption = None
+
         if self.pacman:
             # the decaying animation of the pacman
             if self.pacman.decaying:
@@ -143,7 +155,9 @@ class Game():
                         self.frames = 0
                         self.fruit = None
                         self.fruit_caption = None
+                        self.ghost_caption = None
                         self.eaten_balls = 0
+                        self.ghost_score = 200
                         self.create_sprites(self.level, reset_static_objects=False) # reset only dynamic objects (the Pacman and ghosts)
             else:
                 # collision between the pacman and intersections
@@ -176,6 +190,7 @@ class Game():
                     if self.collision_detection(self.pacman, bb):
                         self.big_balls.remove(bb)
                         self.score += 50
+                        self.ghost_score = 200
                         for g in self.ghosts:
                             if g.state == 'NORMAL' or g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
                                 if g.state == 'NORMAL' and not g.stay_at_home:
@@ -196,6 +211,10 @@ class Game():
                             self.pacman.stop()
                         elif g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
                             g.change_state('EYES')
+                            self.score += self.ghost_score
+                            self.ghost_caption = GhostCaption((g.x - BG_X) // FACTOR, \
+                                (g.y - BG_Y) // FACTOR, self.ghost_score)
+                            self.ghost_score *= 2
                         break
 
                 # collision between the pacman and the fruit
