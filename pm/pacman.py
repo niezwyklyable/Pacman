@@ -28,6 +28,7 @@ class Pacman(Sprite):
             t += (s, ) * self.DECAY_REPLICATE
         self.STATES_DECAY_WITH_REPLICATE = list(t)
         self.decaying = False
+        self.last_intersection = None
 
     def set_future_dir(self, dir):
         if dir == 'LEFT':

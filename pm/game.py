@@ -35,7 +35,7 @@ class Game():
             self.score = 0
             self.lives = 3
         self.home_center = None # needed for path finding algorithm
-        self.end_node = None # needed for path finding algorithm
+        self.above_home = None # needed for path finding algorithm
         self.create_sprites(self.level)
 
     def render(self):
@@ -163,6 +163,7 @@ class Game():
                 # collision between the pacman and intersections
                 for i in self.intersections:
                     if self.collision_detection(self.pacman, i):
+                        self.pacman.last_intersection = i
                         break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
                 else: 
                     # available moves between two intersections (when there is no collision)
@@ -282,8 +283,18 @@ class Game():
                 if self.collision_detection(g, i):
                     if g.eaten: # needed for call the A* algorithm only once
                         g.eaten = False
-                        g.path = self.a_star_algorithm(start_node=i) # assign the path to the current ghost
-                        g.stop() # it is needed to starting the path from the proper node (start node, not the node next to the start node)
+                        g.return_home_path = self.a_star_algorithm(start_node=i, end_node=self.above_home) # assign the path to the current ghost
+                        self.collision_detection(g, i) # it is needed to starting the path from the proper node (start node, not the node next to the start node)
+                        break
+                    if g.state == 'NORMAL':
+                        if g.SUBTYPE == 'BLINKY':
+                            g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
+                            self.collision_detection(g, i)
+                            break
+                    elif g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
+                        g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
+                        self.collision_detection(g, i)
+                        break
                     break
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
@@ -294,12 +305,26 @@ class Game():
                 if obj1.TYPE == 'GHOST':
                     if obj1.stay_at_home:
                         return False
-                    if obj1.state != 'EYES':
-                        obj1.generate_random_dir()
-                    if obj1.state == 'EYES' and not obj1.eaten:
+                    if obj1.state == 'NORMAL':
+                        if obj1.SUBTYPE == 'BLINKY':
+                            obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
+                        elif obj1.SUBTYPE == 'PINKY':
+                            obj1.generate_random_dir()
+                        elif obj1.SUBTYPE == 'INKY':
+                            obj1.generate_random_dir()
+                        elif obj1.SUBTYPE == 'CLYDE':
+                            obj1.generate_random_dir()
+                    elif obj1.state == 'FULL_BLUE' or obj1.state == 'HALF_BLUE':
+                        possible_dirs = obj2.dirs.keys()
+                        if len(possible_dirs) > 1: # protection from using random.choice function on an empty tuple
+                            obj1.take_dir_to_flee_from_pacman(possible_dirs)
+                            return True
+                        else:
+                            obj1.generate_random_dir() # generate random dir while the ghost change dir to appropriate one
+                    elif obj1.state == 'EYES' and not obj1.eaten:
                         obj1.take_dir_to_go_home() # use the path from path finding algorithm to back home
                         # the last step to return home
-                        if obj2 is self.end_node:
+                        if obj2 is self.above_home:
                             obj1.change_dir()
                             return True
                         # back to NORMAL state
@@ -350,14 +375,14 @@ class Game():
         return path # returns the path starting from the last dir !!! (reversed path - the ghost popping items from the end so for him is the first move)
 
     # A* path finding algorithm
-    def a_star_algorithm(self, start_node):
+    def a_star_algorithm(self, start_node, end_node):
         count = 0
         open_set = PriorityQueue() # it sorts items out in ascending order by the first element (if the first elements have the same value it sorts by the second element, so thats why var count is needed)
         came_from = {} # thanks to this dict we can reconstruct the shortest path that algorithm traverses through for us
         g_score = {node: float("inf") for node in self.intersections} # G score is an obligatory and basic component of this algorithm
         g_score[start_node] = 0
         f_score = {node: float("inf") for node in self.intersections} # F score = G score + H score
-        f_score[start_node] = self.h(start_node, self.end_node) # H score is not obligatory component but it helps with reaching faster the end node (less items in open set to sort)
+        f_score[start_node] = self.h(start_node, end_node) # H score is not obligatory component but it helps with reaching faster the end node (less items in open set to sort)
         open_set.put((f_score[start_node], count, start_node))
         open_set_hash = {start_node} # there is no possisility to check if the priority queue has the specific item so we need to save this info in the set
 
@@ -370,7 +395,7 @@ class Game():
             open_set_hash.remove(current_node)
 
             # goal reaching
-            if current_node is self.end_node:
+            if current_node is end_node:
                 path = self.create_path(came_from, current_node)
                 return path
 
@@ -399,7 +424,7 @@ class Game():
                     # update the dictionaries
                     came_from[node] = (current_node, dir)
                     g_score[node] = temp_g_score
-                    f_score[node] = temp_g_score + self.h(node, self.end_node)
+                    f_score[node] = temp_g_score + self.h(node, end_node)
                     if node not in open_set_hash:
                         count += 1
                         open_set.put((f_score[node], count, node)) # add to the open set all the new neighbor nodes which are not in there yet
@@ -428,8 +453,8 @@ class Game():
         # static objects
         if reset_static_objects:
             # out of the coordinate system (home and other points)
-            self.end_node = Intersection(112, 92, LEFT=1.5, RIGHT=1.5) # above home
-            self.intersections.append(self.end_node)
+            self.above_home = Intersection(112, 92, LEFT=1.5, RIGHT=1.5) # above home
+            self.intersections.append(self.above_home)
             self.intersections.append(Intersection(96, 116, RIGHT=2)) # home's left side
             self.home_center = Intersection(112, 116, UP=3) # home's centre
             self.intersections.append(self.home_center)

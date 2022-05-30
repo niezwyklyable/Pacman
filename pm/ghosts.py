@@ -40,7 +40,8 @@ class Ghost(Pacman):
         self.EYES_DOWN = [EYES_DOWN]
         self.frames = 0
         self.eaten = False # when it is True it means that the ghost was eaten by Pacman but still not started path finding process
-        self.path = [] # list of dirs for the ghost to reach the goal (home center)
+        self.return_home_path = [] # list of dirs for the ghost to reach the goal (home center)
+        self.follow_pacman_path = [] # list of dirs for the ghost to follow the Pacman (tracking) - actually only the last (the first for the ghost) dir is sufficient
 
     def change_state(self, state):
         if state == 'NORMAL':
@@ -83,8 +84,8 @@ class Ghost(Pacman):
         self.set_future_dir(dir)
 
     def take_dir_to_go_home(self):
-        if self.path:
-            dir = self.path.pop()
+        if self.return_home_path:
+            dir = self.return_home_path.pop()
         else:
             dir = 'DOWN' # the last step to go home
         self.set_future_dir(dir)
@@ -103,6 +104,35 @@ class Ghost(Pacman):
             self.set_future_dir('UP')
             self.change_dir()
 
+    def take_dir_to_follow_pacman(self, pacman_x, pacman_y):
+        if self.follow_pacman_path:
+            dir = self.follow_pacman_path.pop()
+            self.set_future_dir(dir)
+        else: # if the path is spent (empty), try to find the pacman between the nodes (intersections)
+            if self.x == pacman_x:
+                if self.y > pacman_y:
+                    self.set_future_dir('UP')
+                elif self.y < pacman_y:
+                    self.set_future_dir('DOWN')
+            elif self.y == pacman_y:
+                if self.x > pacman_x:
+                    self.set_future_dir('LEFT')
+                elif self.x < pacman_x:
+                    self.set_future_dir('RIGHT')
+
+    def take_dir_to_flee_from_pacman(self, possible_dirs):
+        if self.follow_pacman_path: # sometimes there is no path due to the first execution of collision_detection method in the Game class
+            dir_to_pacman = self.follow_pacman_path.pop()
+            dirs = {'LEFT', 'RIGHT', 'DOWN', 'UP'}
+            dirs.remove(dir_to_pacman)
+            dirs = tuple(dirs)
+            while True:
+                random_dir = random.choice(dirs)
+                if random_dir in possible_dirs:
+                    self.set_future_dir(random_dir)
+                    self.change_dir() # assign future_dir to current_dir
+                    break
+
 class Blinky(Ghost):
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
         super().__init__(x=x, y=y, STEP=STEP, GO_OUT_THRESHOLD=GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD=HALF_BLUE_THRESHOLD)
@@ -113,7 +143,7 @@ class Blinky(Ghost):
         self.STATES_DOWN_NORMAL = [BLINKY_DOWN_1, BLINKY_DOWN_2]
         self.stay_at_home = False
         self.change_state('NORMAL')
-        #self.SUBTYPE = 'BLINKY'
+        self.SUBTYPE = 'BLINKY'
 
 class Inky(Ghost):
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
@@ -126,7 +156,7 @@ class Inky(Ghost):
         self.STATES_UP_NORMAL = [INKY_UP_1, INKY_UP_2]
         self.STATES_DOWN_NORMAL = [INKY_DOWN_1, INKY_DOWN_2]
         self.change_state('NORMAL')
-        #self.SUBTYPE = 'INKY'
+        self.SUBTYPE = 'INKY'
 
 class Pinky(Ghost):
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
@@ -139,7 +169,7 @@ class Pinky(Ghost):
         self.STATES_UP_NORMAL = [PINKY_UP_1, PINKY_UP_2]
         self.STATES_DOWN_NORMAL = [PINKY_DOWN_1, PINKY_DOWN_2]
         self.change_state('NORMAL')
-        #self.SUBTYPE = 'PINKY'
+        self.SUBTYPE = 'PINKY'
 
 class Clyde(Ghost):
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
@@ -152,7 +182,7 @@ class Clyde(Ghost):
         self.STATES_UP_NORMAL = [CLYDE_UP_1, CLYDE_UP_2]
         self.STATES_DOWN_NORMAL = [CLYDE_DOWN_1, CLYDE_DOWN_2]
         self.change_state('NORMAL')
-        #self.SUBTYPE = 'CLYDE'
+        self.SUBTYPE = 'CLYDE'
 
 class GhostCaption(Sprite):
     HIDE_THRESHOLD = 50
