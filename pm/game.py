@@ -163,7 +163,30 @@ class Game():
                 # collision between the pacman and intersections
                 for i in self.intersections:
                     if self.collision_detection(self.pacman, i):
-                        self.pacman.last_intersection = i
+                        self.pacman.last_intersection = i # setting the last visited node by Pacman
+
+                        # searching for the predicted node to visit by Pacman
+                        dir = self.pacman.current_dir
+                        if dir:
+                            value = i.dirs[dir]
+                        else:
+                            break # the dir is equal to None and the predicted intersection is found previously so break the loop
+                        for neighbor_node in self.intersections:
+                            distance = 0
+                            if i.x == neighbor_node.x:
+                                if dir == 'UP':
+                                    distance = (i.y - neighbor_node.y) / 8 / FACTOR
+                                elif dir == 'DOWN':
+                                    distance = -1 * (i.y - neighbor_node.y) / 8 / FACTOR
+                            elif i.y == neighbor_node.y:
+                                if dir == 'LEFT':
+                                    distance = (i.x - neighbor_node.x) / 8 / FACTOR
+                                elif dir == 'RIGHT':
+                                    distance = -1 * (i.x - neighbor_node.x) / 8 / FACTOR
+                            if distance == value:
+                                self.pacman.predicted_intersection = neighbor_node
+                                break # break the loop because the searching is over (there is always only one predicted node)
+                        
                         break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
                 else: 
                     # available moves between two intersections (when there is no collision)
@@ -295,6 +318,10 @@ class Game():
                             g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
                             self.collision_detection(g, i)
                             break
+                        elif g.SUBTYPE == 'PINKY':
+                            g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.predicted_intersection)
+                            self.collision_detection(g, i)
+                            break
                     elif g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
                         g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
                         self.collision_detection(g, i)
@@ -313,7 +340,8 @@ class Game():
                         if obj1.SUBTYPE == 'BLINKY':
                             obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
                         elif obj1.SUBTYPE == 'PINKY':
-                            obj1.generate_random_dir()
+                            #obj1.generate_random_dir()
+                            obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
                         elif obj1.SUBTYPE == 'INKY':
                             obj1.generate_random_dir()
                         elif obj1.SUBTYPE == 'CLYDE':
