@@ -172,6 +172,8 @@ class Pinky(Ghost):
         self.SUBTYPE = 'PINKY'
 
 class Clyde(Ghost):
+    FLEEING_RANGE = 50
+
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
         super().__init__(x=x, y=y, STEP=STEP, GO_OUT_THRESHOLD=GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD=HALF_BLUE_THRESHOLD)
         self.current_dir = 'UP'

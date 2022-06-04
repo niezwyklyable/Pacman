@@ -291,6 +291,10 @@ class Game():
                             g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
                             self.collision_detection(g, i)
                             break
+                        elif g.SUBTYPE == 'CLYDE':
+                            g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
+                            self.collision_detection(g, i)
+                            break
                     elif g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
                         g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
                         self.collision_detection(g, i)
@@ -313,10 +317,19 @@ class Game():
                         elif obj1.SUBTYPE == 'INKY':
                             obj1.generate_random_dir()
                         elif obj1.SUBTYPE == 'CLYDE':
-                            obj1.generate_random_dir()
+                            # checking if Clyde has to switch to fleeing mode (normally it follows the Pacman)
+                            if sqrt((obj1.x - self.pacman.x)**2 + (obj1.y - self.pacman.y)**2) <= obj1.FLEEING_RANGE * FACTOR:
+                                possible_dirs = obj2.dirs.keys()
+                                if len(possible_dirs) > 1: # protection from staying in the infinite loop
+                                    obj1.take_dir_to_flee_from_pacman(possible_dirs)
+                                    return True
+                                else:
+                                    obj1.generate_random_dir() # generate random dir while the ghost change dir to appropriate one
+                            else:
+                                obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
                     elif obj1.state == 'FULL_BLUE' or obj1.state == 'HALF_BLUE':
                         possible_dirs = obj2.dirs.keys()
-                        if len(possible_dirs) > 1: # protection from using random.choice function on an empty tuple
+                        if len(possible_dirs) > 1: # protection from staying in the infinite loop
                             obj1.take_dir_to_flee_from_pacman(possible_dirs)
                             return True
                         else:
