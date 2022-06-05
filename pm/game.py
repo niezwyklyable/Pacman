@@ -9,7 +9,6 @@ from .fruit import Fruit, FruitCaption
 from queue import PriorityQueue
 
 class Game():
-    GO_OUT_THRESHOLD = 250  # basic number of frames to go out (for ghosts)
     BALLS_THRESHOLD = 70 # number of small balls needed to collect due to fruit to pop up
     
     def __init__(self, win):
@@ -72,10 +71,6 @@ class Game():
         if self.ghost_caption:
             self.ghost_caption.draw(self.win)
 
-        # points of intersections (for testing purposes)
-        for i in self.intersections:
-            i.draw(self.win)
-
         # an upper bar
         font = pygame.font.SysFont('comicsans', 20)
         caption = font.render(f'LVL: {self.level}\
@@ -100,6 +95,9 @@ class Game():
             font = pygame.font.SysFont('comicsans', 35)
             caption = font.render('GAME OVER', 1, RED)
             self.win.blit(caption, (int(BG_X + BACKGROUND.get_width() / 2 - caption.get_width() / 2), int(BG_Y + 140 * FACTOR - caption.get_height() / 2)))
+            font = pygame.font.SysFont('comicsans', 25)
+            caption = font.render('(PRESS ENTER TO RESTART)', 1, RED)
+            self.win.blit(caption, (int(BG_X + BACKGROUND.get_width() / 2 - caption.get_width() / 2), int(BG_Y + 160 * FACTOR - caption.get_height() / 2)))
 
         pygame.display.update()
 
@@ -313,7 +311,7 @@ class Game():
                     if g.eaten: # needed for call the A* algorithm only once
                         g.eaten = False
                         g.return_home_path = self.a_star_algorithm(start_node=i, end_node=self.above_home) # assign the path to the current ghost
-                        self.collision_detection(g, i) # it is needed to starting the path from the proper node (start node, not the node next to the start node)
+                        self.collision_detection(g, i) # it is needed to start the path from the proper node (start node, not the node next to the start node)
                         break
                     if g.state == 'NORMAL':
                         if g.SUBTYPE == 'BLINKY' or g.SUBTYPE == 'CLYDE':
@@ -339,7 +337,7 @@ class Game():
 
     def collision_detection(self, obj1, obj2): # obj1 is a dynamic object, obj2 is considered as a static object even though it is a dynamic object
         if (obj1.TYPE == 'PACMAN' or obj1.TYPE == 'GHOST') and obj2.TYPE == 'INTERSECTION':
-            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
+            if sqrt((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2) < FACTOR * obj1.STEP - 0.1: # the radius of a collision - it should be lesser than STEP * FACTOR but not lesser than a half of STEP * FACTOR of a dynamic object to work properly
                 obj1.x = obj2.x # alignment to the center of obj2
                 obj1.y = obj2.y # alignment to the center of obj2
                 if obj1.TYPE == 'GHOST':
@@ -421,11 +419,11 @@ class Game():
         return False
 
     # heuristic part of A* algorithm
-    def h(self, n1, n2):
-        result = abs(n1.x - n2.x) + abs(n1.y - n2.y)
-        result /= FACTOR
-        result /= 8
-        return result
+    # def h(self, n1, n2):
+    #     result = abs(n1.x - n2.x) + abs(n1.y - n2.y)
+    #     result /= FACTOR
+    #     result /= 8
+    #     return result
 
     # build a path from the end node to the start node using the dictionary came_from (stepping node by node)
     def create_path(self, came_from, current):
@@ -443,7 +441,7 @@ class Game():
         g_score = {node: float("inf") for node in self.intersections} # G score is an obligatory and basic component of this algorithm
         g_score[start_node] = 0
         f_score = {node: float("inf") for node in self.intersections} # F score = G score + H score
-        f_score[start_node] = self.h(start_node, end_node) # H score is not obligatory component but it helps with reaching faster the end node (less items in open set to sort)
+        f_score[start_node] = 0#self.h(start_node, end_node) # H score is not obligatory component but it helps with reaching faster the end node (less items in open set to sort)
         open_set.put((f_score[start_node], count, start_node))
         open_set_hash = {start_node} # there is no possisility to check if the priority queue has the specific item so we need to save this info in the set
 
@@ -485,7 +483,7 @@ class Game():
                     # update the dictionaries
                     came_from[node] = (current_node, dir)
                     g_score[node] = temp_g_score
-                    f_score[node] = temp_g_score + self.h(node, end_node)
+                    f_score[node] = temp_g_score #+ self.h(node, end_node)
                     if node not in open_set_hash:
                         count += 1
                         open_set.put((f_score[node], count, node)) # add to the open set all the new neighbor nodes which are not in there yet
@@ -494,22 +492,46 @@ class Game():
     def create_sprites(self, lvl, reset_static_objects=True):
         # dynamic objects
         if lvl == 1:
-            ghost_step = 1
-            half_blue_threshold = 400
+            ghost_step = 1.0 # ghost step never should be greater or equal to the pacman's step which is always 2
+            go_out_threshold = 270 # basic number of frames to go out (Blinky always has 0)
+            half_blue_threshold = 300 # number of frames during ghost's recovery process
         elif lvl == 2:
-            ghost_step = 1.5
-            half_blue_threshold = 300
-        else:
-            ghost_step = 2
+            ghost_step = 1.2
+            go_out_threshold = 240
             half_blue_threshold = 200
+        elif lvl == 3:
+            ghost_step = 1.4
+            go_out_threshold = 210
+            half_blue_threshold = 150
+        elif lvl == 4:
+            ghost_step = 1.6
+            go_out_threshold = 180
+            half_blue_threshold = 100
+        elif lvl == 5:
+            ghost_step = 1.7
+            go_out_threshold = 150
+            half_blue_threshold = 80
+        elif lvl == 6:
+            ghost_step = 1.8
+            go_out_threshold = 120
+            half_blue_threshold = 50
+        elif lvl == 7:
+            ghost_step = 1.9
+            go_out_threshold = 100
+            half_blue_threshold = 30
+        else:
+            ghost_step = 2.0
+            go_out_threshold = 90
+            half_blue_threshold = 0
 
         ghost_step = 2/3 * ghost_step # global scale
+        go_out_threshold = 1 * go_out_threshold # global scale
         half_blue_threshold = 1 * half_blue_threshold # global scale
         self.pacman = Pacman(112, 188, 2)
         self.ghosts.append(Blinky(112, 92, ghost_step, 0, half_blue_threshold))
-        self.ghosts.append(Inky(96, 116, ghost_step, 2 * self.GO_OUT_THRESHOLD, half_blue_threshold))
-        self.ghosts.append(Pinky(112, 116, ghost_step, self.GO_OUT_THRESHOLD, half_blue_threshold))
-        self.ghosts.append(Clyde(128, 116, ghost_step, 3 * self.GO_OUT_THRESHOLD, half_blue_threshold))
+        self.ghosts.append(Inky(96, 116, ghost_step, 2 * go_out_threshold, half_blue_threshold))
+        self.ghosts.append(Pinky(112, 116, ghost_step, go_out_threshold, half_blue_threshold))
+        self.ghosts.append(Clyde(128, 116, ghost_step, 3 * go_out_threshold, half_blue_threshold))
 
         # static objects
         if reset_static_objects:

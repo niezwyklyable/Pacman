@@ -8,8 +8,6 @@ class Sprite(): # an abstract class
         self.y = BG_Y + FACTOR * y
 
     def draw(self, win):
-         win.blit(self.IMG, (self.x - self.IMG.get_width() // 2, \
-             self.y - self.IMG.get_height() // 2))
-
-    def move(self):
-        pass
+        win.blit(self.IMG, (self.x - self.IMG.get_width() // 2, \
+            self.y - self.IMG.get_height() // 2))
+             

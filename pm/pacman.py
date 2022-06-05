@@ -6,9 +6,8 @@ from .constants import PACMAN_LEFT_1, PACMAN_LEFT_2, PACMAN_RIGHT_1, PACMAN_RIGH
 from pygame import draw
 
 class Pacman(Sprite):
-    #STEP = 2 # be careful with it.. (it has a linkage with collision_detection method in the Game class)
     REPLICATE = 2 # the extension of the lifetime of the current IMG
-    DECAY_REPLICATE = 5 # like above but it concerns only decaying process
+    DECAY_REPLICATE = 3 # like above but it concerns only decaying process
 
     def __init__(self, x, y, STEP):
         super().__init__(IMG=PACMAN_FULL, TYPE='PACMAN', x=x, y=y)

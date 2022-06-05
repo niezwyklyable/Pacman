@@ -16,11 +16,9 @@ class Ghost(Pacman):
         self.TYPE = 'GHOST'
         self.STEP_NORMAL = STEP
         self.STEP_SLOWER = STEP * 0.55 # in the tunnel
-        self.STEP_FASTER = STEP * 2 # during home returning
+        self.STEP_FASTER = STEP * 6 # during home returning
         self.stay_at_home = True # if it is True the ghost cannot escape the home (the centre of the map)
         self.GO_OUT_THRESHOLD = GO_OUT_THRESHOLD # number of frames to go out (escape the home)
-        #self.FORCED_DIRS = ['LEFT', 'DOWN', 'LEFT', 'LEFT', 'UP', 'RIGHT', 'UP', 'LEFT', 'DOWN', \
-        # 'DOWN', 'DOWN'] # for testing purposes only
         self.HALF_BLUE_THRESHOLD = HALF_BLUE_THRESHOLD # number of frames to change state from FULL BLUE to HALF BLUE
         self.NORMAL_THRESHOLD = 1.2 * HALF_BLUE_THRESHOLD # number of frames to change state from HALF BLUE to NORMAL
         self.state = 'NORMAL'
@@ -72,15 +70,13 @@ class Ghost(Pacman):
             self.STATES_UP = self.EYES_UP
             self.STATES_DOWN = self.EYES_DOWN
     
-    # needed to be uncomment later
-    # def draw(self, win):
-    #     win.blit(self.IMG, (self.x - self.IMG.get_width() // 2, \
-    #          self.y - self.IMG.get_height() // 2))
+    def draw(self, win):
+        win.blit(self.IMG, (self.x - self.IMG.get_width() // 2, \
+             self.y - self.IMG.get_height() // 2))
 
     # it is necessary to allow the ghost to go out (escape the home) when fleeing from Pacman is activated
     def generate_random_dir(self):
         dir = random.choice(['LEFT', 'RIGHT', 'UP', 'DOWN'])
-        #dir = self.FORCED_DIRS.pop(0) # for testing purposes only
         self.set_future_dir(dir)
 
     def take_dir_to_go_home(self):
