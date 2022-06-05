@@ -77,7 +77,7 @@ class Ghost(Pacman):
     #     win.blit(self.IMG, (self.x - self.IMG.get_width() // 2, \
     #          self.y - self.IMG.get_height() // 2))
 
-    # a temporarily method, ultimately it will move smartly (AI?) as the original Pacman rules say
+    # it is necessary to allow the ghost to go out (escape the home) when fleeing from Pacman is activated
     def generate_random_dir(self):
         dir = random.choice(['LEFT', 'RIGHT', 'UP', 'DOWN'])
         #dir = self.FORCED_DIRS.pop(0) # for testing purposes only
@@ -146,6 +146,9 @@ class Blinky(Ghost):
         self.SUBTYPE = 'BLINKY'
 
 class Inky(Ghost):
+    CHANGE_MODE_THRESHOLD = 600
+    FLEEING_RANGE = 50
+
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):
         super().__init__(x=x, y=y, STEP=STEP, GO_OUT_THRESHOLD=GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD=HALF_BLUE_THRESHOLD)
         self.current_dir = 'UP'
@@ -157,6 +160,12 @@ class Inky(Ghost):
         self.STATES_DOWN_NORMAL = [INKY_DOWN_1, INKY_DOWN_2]
         self.change_state('NORMAL')
         self.SUBTYPE = 'INKY'
+        self.mode = 'being_like_blinky'
+        self.frames_to_change_mode = 0 # it is totally different than self.frames
+
+    def change_mode(self):
+        self.mode = random.choice(['being_like_blinky', 'being_like_pinky', 'being_like_clyde'])
+        self.frames_to_change_mode = 0 # reset
 
 class Pinky(Ghost):
     def __init__(self, x, y, STEP, GO_OUT_THRESHOLD, HALF_BLUE_THRESHOLD):

@@ -28,7 +28,7 @@ class Game():
         self.fruit_caption = None
         self.ghost_caption = None
         self.eaten_balls = 0
-        self.ghost_score = 200 # basic of bonus points for eating the blue ghost 
+        self.ghost_score = 200 # basic of bonus points for eating the blue ghost
         if not next_level:
             self.gameover = False
             self.level = 1
@@ -298,6 +298,12 @@ class Game():
                 if g.frames >= g.NORMAL_THRESHOLD:
                     g.change_state('NORMAL')
 
+            # set random mode for Inky ghost from the list of 3 possible modes
+            if g.SUBTYPE == 'INKY':
+                g.frames_to_change_mode += 1
+                if g.frames_to_change_mode >= g.CHANGE_MODE_THRESHOLD:
+                    g.change_mode()
+
             g.move() # move according to the current_dir (it has to be before collision detection with intersections due to STEP changing)
             g.change_image() # an animation
 
@@ -310,16 +316,19 @@ class Game():
                         self.collision_detection(g, i) # it is needed to starting the path from the proper node (start node, not the node next to the start node)
                         break
                     if g.state == 'NORMAL':
-                        if g.SUBTYPE == 'BLINKY':
-                            g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
-                            self.collision_detection(g, i)
-                            break
-                        elif g.SUBTYPE == 'CLYDE':
+                        if g.SUBTYPE == 'BLINKY' or g.SUBTYPE == 'CLYDE':
                             g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
                             self.collision_detection(g, i)
                             break
                         elif g.SUBTYPE == 'PINKY':
                             g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.predicted_intersection)
+                            self.collision_detection(g, i)
+                            break
+                        elif g.SUBTYPE == 'INKY':
+                            if g.mode == 'being_like_blinky' or g.mode == 'being_like_clyde':
+                                g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.last_intersection)
+                            elif g.mode == 'being_like_pinky':
+                                g.follow_pacman_path = self.a_star_algorithm(start_node=i, end_node=self.pacman.predicted_intersection)
                             self.collision_detection(g, i)
                             break
                     elif g.state == 'FULL_BLUE' or g.state == 'HALF_BLUE':
@@ -340,10 +349,21 @@ class Game():
                         if obj1.SUBTYPE == 'BLINKY':
                             obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
                         elif obj1.SUBTYPE == 'PINKY':
-                            #obj1.generate_random_dir()
                             obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
                         elif obj1.SUBTYPE == 'INKY':
-                            obj1.generate_random_dir()
+                            if obj1.mode == 'being_like_blinky' or obj1.mode == 'being_like_pinky':
+                                obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
+                            elif obj1.mode == 'being_like_clyde':
+                                # checking if Inky has to switch to fleeing mode (normally it follows the Pacman)
+                                if sqrt((obj1.x - self.pacman.x)**2 + (obj1.y - self.pacman.y)**2) <= obj1.FLEEING_RANGE * FACTOR:
+                                    possible_dirs = obj2.dirs.keys()
+                                    if len(possible_dirs) > 1: # protection from staying in the infinite loop
+                                        obj1.take_dir_to_flee_from_pacman(possible_dirs)
+                                        return True
+                                    else:
+                                        obj1.generate_random_dir() # generate random dir while the ghost change dir to appropriate one
+                                else:
+                                    obj1.take_dir_to_follow_pacman(self.pacman.x, self.pacman.y)
                         elif obj1.SUBTYPE == 'CLYDE':
                             # checking if Clyde has to switch to fleeing mode (normally it follows the Pacman)
                             if sqrt((obj1.x - self.pacman.x)**2 + (obj1.y - self.pacman.y)**2) <= obj1.FLEEING_RANGE * FACTOR:
