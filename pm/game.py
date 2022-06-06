@@ -30,6 +30,7 @@ class Game():
         self.ghost_score = 200 # basic of bonus points for eating the blue ghost
         if not next_level:
             self.gameover = False
+            self.pause = False
             self.level = 1
             self.score = 0
             self.lives = 3
@@ -97,6 +98,15 @@ class Game():
             self.win.blit(caption, (int(BG_X + BACKGROUND.get_width() / 2 - caption.get_width() / 2), int(BG_Y + 140 * FACTOR - caption.get_height() / 2)))
             font = pygame.font.SysFont('comicsans', 25)
             caption = font.render('(PRESS ENTER TO RESTART)', 1, RED)
+            self.win.blit(caption, (int(BG_X + BACKGROUND.get_width() / 2 - caption.get_width() / 2), int(BG_Y + 160 * FACTOR - caption.get_height() / 2)))
+
+        # a pause caption
+        if self.pause:
+            font = pygame.font.SysFont('comicsans', 35)
+            caption = font.render('PAUSED', 1, RED)
+            self.win.blit(caption, (int(BG_X + BACKGROUND.get_width() / 2 - caption.get_width() / 2), int(BG_Y + 140 * FACTOR - caption.get_height() / 2)))
+            font = pygame.font.SysFont('comicsans', 25)
+            caption = font.render('(PRESS ENTER TO UNPAUSE)', 1, RED)
             self.win.blit(caption, (int(BG_X + BACKGROUND.get_width() / 2 - caption.get_width() / 2), int(BG_Y + 160 * FACTOR - caption.get_height() / 2)))
 
         pygame.display.update()

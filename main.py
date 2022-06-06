@@ -14,6 +14,14 @@ def main():
     while run:
         clock.tick(FPS)
 
+        if not game.gameover:
+            if game.pause:
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                            game.pause = False
+                continue
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -24,6 +32,9 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if not game.gameover:
+                    if event.key == pygame.K_RETURN:
+                        game.pause = True
+                        continue
                     if event.key == pygame.K_LEFT:
                         game.pacman.set_future_dir('LEFT')
                     elif event.key == pygame.K_RIGHT:
