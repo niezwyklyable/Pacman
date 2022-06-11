@@ -17,6 +17,9 @@ def main():
         if not game.gameover:
             if game.pause:
                 for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        run = False
+
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_RETURN:
                             game.pause = False
