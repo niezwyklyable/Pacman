@@ -518,35 +518,35 @@ class Game():
     def create_sprites(self, lvl, reset_static_objects=True):
         # dynamic objects
         if lvl == 1:
-            ghost_step = 1.0 # ghost step never should be greater or equal to the pacman's step which is always 2
-            go_out_threshold = 270 # basic number of frames to go out (Blinky always has 0)
-            half_blue_threshold = 300 # number of frames during ghost's recovery process
+            ghost_step = 1.1 # ghost step never should be greater or equal to the pacman's step which is always 2
+            go_out_threshold = 300 # basic number of frames to go out (Blinky always has 0)
+            half_blue_threshold = 280 # number of frames during ghost's recovery process
         elif lvl == 2:
             ghost_step = 1.2
-            go_out_threshold = 240
-            half_blue_threshold = 200
+            go_out_threshold = 270
+            half_blue_threshold = 270
         elif lvl == 3:
+            ghost_step = 1.3
+            go_out_threshold = 240
+            half_blue_threshold = 250
+        elif lvl == 4:
             ghost_step = 1.4
             go_out_threshold = 210
-            half_blue_threshold = 150
-        elif lvl == 4:
-            ghost_step = 1.6
-            go_out_threshold = 180
-            half_blue_threshold = 100
+            half_blue_threshold = 220
         elif lvl == 5:
-            ghost_step = 1.7
-            go_out_threshold = 150
-            half_blue_threshold = 80
+            ghost_step = 1.5
+            go_out_threshold = 180
+            half_blue_threshold = 180
         elif lvl == 6:
-            ghost_step = 1.8
-            go_out_threshold = 120
-            half_blue_threshold = 50
+            ghost_step = 1.6
+            go_out_threshold = 150
+            half_blue_threshold = 130
         elif lvl == 7:
-            ghost_step = 1.9
-            go_out_threshold = 100
-            half_blue_threshold = 30
+            ghost_step = 1.7
+            go_out_threshold = 120
+            half_blue_threshold = 70
         else:
-            ghost_step = 2.0
+            ghost_step = 1.8
             go_out_threshold = 90
             half_blue_threshold = 0
 
