@@ -5,7 +5,8 @@ from .constants import BLINKY_RIGHT_1, BLINKY_RIGHT_2, BLINKY_LEFT_1, BLINKY_LEF
     INKY_DOWN_1, INKY_DOWN_2, INKY_LEFT_1, INKY_LEFT_2, INKY_RIGHT_1, INKY_RIGHT_2, INKY_UP_1, INKY_UP_2, \
     CLYDE_DOWN_1, CLYDE_DOWN_2, CLYDE_LEFT_1, CLYDE_LEFT_2, CLYDE_RIGHT_1, CLYDE_RIGHT_2, CLYDE_UP_1,\
     CLYDE_UP_2, BLUE_1, BLUE_2, GREY_1, GREY_2, EYES_DOWN, EYES_LEFT, EYES_RIGHT, EYES_UP, \
-    GHOST_CAPTION_1, GHOST_CAPTION_2, GHOST_CAPTION_3, GHOST_CAPTION_4
+    GHOST_CAPTION_1, GHOST_CAPTION_2, GHOST_CAPTION_3, GHOST_CAPTION_4, \
+    BG_X, BG_Y, FACTOR
 import random
 from .sprite import Sprite
 
@@ -105,11 +106,19 @@ class Ghost(Pacman):
             dir = self.follow_pacman_path.pop()
             self.set_future_dir(dir)
         else: # if the path is spent (empty), try to find the pacman between the nodes (intersections)
-            if self.x == pacman_x:
+            # consider the tunnel case firstly
+            if self.y == pacman_y and self.y == BG_Y + 116 * FACTOR and (pacman_x < BG_X + 52 * FACTOR or pacman_x > BG_X + 172 * FACTOR):
+                if self.x == BG_X + 52 * FACTOR:
+                    self.set_future_dir('LEFT')
+                elif self.x == BG_X + 172 * FACTOR:
+                    self.set_future_dir('RIGHT')
+            # check vertically
+            elif self.x == pacman_x:
                 if self.y > pacman_y:
                     self.set_future_dir('UP')
                 elif self.y < pacman_y:
                     self.set_future_dir('DOWN')
+            # check horizontally
             elif self.y == pacman_y:
                 if self.x > pacman_x:
                     self.set_future_dir('LEFT')

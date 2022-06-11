@@ -179,7 +179,23 @@ class Game():
                             value = i.dirs[dir]
                         else:
                             break # the dir is equal to None and the predicted intersection is found previously so break the loop
-                        for neighbor_node in self.intersections:
+                        
+                        # consider the tunnel case firstly
+                        if i.y == BG_Y + 116 * FACTOR and i.x == BG_X + 52 * FACTOR and dir == 'LEFT':
+                            for neighbor_node in self.intersections:
+                                if neighbor_node.x == BG_X + 172 * FACTOR and neighbor_node.y == BG_Y + 116 * FACTOR:
+                                    self.pacman.predicted_intersection = neighbor_node
+                                    break # break the loop because the searching is over (there is always only one predicted node)
+                            break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
+                        elif i.y == BG_Y + 116 * FACTOR and i.x == BG_X + 172 * FACTOR and dir == 'RIGHT':
+                            for neighbor_node in self.intersections:
+                                if neighbor_node.x == BG_X + 52 * FACTOR and neighbor_node.y == BG_Y + 116 * FACTOR:
+                                    self.pacman.predicted_intersection = neighbor_node
+                                    break # break the loop because the searching is over (there is always only one predicted node)
+                            break # if there is a collision just pass the rest of a loop and the part of code below (optimization issue)
+
+                        # consider every classic case
+                        for neighbor_node in self.intersections:                            
                             distance = 0
                             if i.x == neighbor_node.x:
                                 if dir == 'UP':
