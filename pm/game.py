@@ -33,7 +33,7 @@ class Game():
             self.pause = False
             self.level = 1
             self.score = 0
-            self.lives = 3
+            self.lives = 5
         self.home_center = None # needed for path finding algorithm
         self.above_home = None # needed for path finding algorithm
         self.create_sprites(self.level)
